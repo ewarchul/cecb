@@ -13,7 +13,7 @@ devtools::install_github("warbarbye/CECBench")
 ## Introduction
 
 TODO
-## Algorithms
+## Algorithms API
 
 TODO
 ## Benchmark
