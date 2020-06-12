@@ -1,14 +1,14 @@
 Package: CECBench
-Title: What the Package Does (One Line, Title Case)
+Title: CEC benchmark  
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Eryk",
            family = "Warchulski",
            role = c("aut", "cre"),
-           email = "ewarchul@gmail.com.com",
+           email = "ewarchul@gmail.com",
            )
-Description: What the package does (one paragraph).
-License: What license it uses
+Description: Package contains functions to run benchmark and plot ECDF curve. 
+License: MIT License
 BugReports: https://github.com/warbarbye/CECBench/issues
 Depends:
   R (>= 3.6.2)
