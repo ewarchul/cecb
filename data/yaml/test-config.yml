@@ -1,5 +1,5 @@
 methods:
-  - cma_es_csa
+  - cma_es_sigma_quant
 probnum:
   - 1
   - 2
