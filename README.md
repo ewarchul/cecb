@@ -1,6 +1,6 @@
 # CECBenchmark
 
-Very early version of R package devoted to optimization algorithm benchmarking on CEC problems set.
+Very early version of R package devoted to testing optimization algorithm on CEC problems set.
 
 ## Installation
 
