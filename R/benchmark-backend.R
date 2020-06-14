@@ -11,14 +11,16 @@
 #' @param .cec year of benchmark :: Int
 #' @param .cpupc CPU usage in pct :: Int
 #' @export
+#' @importFrom foreach "%dopar%"
 
 benchmark_parallel = function(.method, .probnum, .dims,
                               .rep, .cec = 17, .cpupc = .75,
-                              .write_flag = TRUE, .method_id) {
+                              .write_flag = TRUE, .method_id,
+                              .dest, .twilio) {
   cli::cli_alert("(problem, dimension, repetition)\n")
   benchmark_id = 
-    paste(stringr::str_replace_all(.method_id, "_", "-"), Sys.Date(), sep = "-")
-  send_sms(".twilio-meta", "start", benchmark_id) 
+    paste(.method_id, Sys.Date(), sep = "-")
+  send_sms(.twilio, "start benchmark", benchmark_id) 
   if (.cec == 17) {
     scores = seq(100, 3000, by = 100)
   } else {
@@ -26,11 +28,11 @@ benchmark_parallel = function(.method, .probnum, .dims,
   }
 
   no_cores =
-    floor(.cpupc * detectCores())
-  registerDoParallel(no_cores)
+    floor(.cpupc * parallel::detectCores())
+  doParallel::registerDoParallel(no_cores)
 
   for (d in .dims) {
-    results <- foreach(
+    results <- foreach::foreach(
       n = .probnum,
       .combine = c,
       .export = c("scores", "d", ".cec")
@@ -42,7 +44,7 @@ benchmark_parallel = function(.method, .probnum, .dims,
         time_start = Sys.time()
         result <- tryCatch(
           {
-            cli::cli_alert_info("Start ({n}, {d}, {i})\n")
+            cli::cli_alert_info("Start {.method_id}: ({n}, {d}, {i})\n")
             .method(
               rep(0, d),
               fn = function(x) {
@@ -68,17 +70,18 @@ benchmark_parallel = function(.method, .probnum, .dims,
           informMatrix[bb, i] <- abs(result$diagnostic$bestVal[recordedTimes[bb] * ceiling(nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
         time_end = round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        cli::cli_alert_success("Done ({n}, {d}, {i} [in {time_end} mins])\n")
-      }
-      if(.write_flag) {
-        save_results(resultVector, .cec, benchmark_id, n, d, result$label, "N")
-        save_results(informMatrix, .cec, benchmark_id, n, d, result$label, "M")
-      }
+        cli::cli_alert_success("Done {.method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
+
+      } 
       print_stats(resultVector)
+      if (.write_flag) {
+        save_results(resultVector, .cec, benchmark_id, n, d, result$label, "N", .dest)
+        save_results(informMatrix, .cec, benchmark_id, n, d, result$label, "M", .dest)
+      }
     }
   }
-  send_sms(".twilio-meta", "end", benchmark_id) 
-  stopImplicitCluster()
+  send_sms(.twilio, "end", benchmark_id) 
+  doParallel::stopImplicitCluster()
 }
 
 #' YAML config parser
@@ -91,14 +94,45 @@ benchmark_parallel = function(.method, .probnum, .dims,
 parse_yaml_config = function(filename) {
   config = 
     yaml::read_yaml(filename)
-  config$methods %>%
+  alg_num = 
+    length(config$methods)
+  alg_names = 
+    extract_names(alg_num, config$methods)
+
+  alg_names %>%
     purrr::walk(function(method) {
-      source(here::here("src", paste0(stringr::str_replace_all(method, "_", "-"), ".R")))
+      source(paste0(config$source, "/", stringr::str_replace_all(method, "_", "-"), ".R"))
     })
+
   config$methods_sym = 
-    config$methods %>%
-    purrr::map(base::get)
+    extract_algorithm(alg_num, config$methods)
   config
+}
+
+#' @export
+
+extract_names = function(amount, algs) {
+  1:amount %>%
+    purrr::map_chr(function(num) {
+      alg =
+        algs %>% purrr::pluck(num)
+      alg$algorithm
+    })
+}
+
+#' @export
+
+extract_algorithm = function(amount, algs) {
+  1:amount %>%
+    purrr::map(function(num) {
+      alg =
+        algs %>% purrr::pluck(num)
+      base_func = 
+        base::get(alg$algorithm)
+      param_set = 
+        setNames(as.list(alg$values), alg$params)
+      purrr::partial(base_func, control = param_set)
+    })
 }
 
 #' Config parser
@@ -147,12 +181,12 @@ print_stats = function(vec) {
 #' @param type result type :: String
 #' @export
 
-save_results = function(x, cec, id, prob, dim, label, type) {
-  dirpath = stringr::str_glue("../data/cec{cec}/{id}/{type}/")
-  filepath = stringr::str_glue("../data/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}-{label}.txt")
+save_results = function(x, cec, id, prob, dim, label, type, dest) {
+  dirpath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
+  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}-{label}.txt")
   if (!dir.exists(dirpath))
     dir.create(dirpath, recursive = TRUE)
-  write.table(x, file = filepath, sep = ",")
+  write.table(x, file = filepath, sep = ",", col.names = FALSE, row.names = FALSE)
 }
 
 #' Send SMS
@@ -171,7 +205,7 @@ send_sms = function(filepath, type, id) {
   else
     body = stringr::str_glue("Benchmark {id} end")
   config =
-    yaml::read_yaml(here::here(filepath))
+    yaml::read_yaml(filepath)
   Sys.setenv(TWILIO_SID = config$sid)
   Sys.setenv(TWILIO_TOKEN = config$token)
   twilio::tw_send_message(

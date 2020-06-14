@@ -3,13 +3,14 @@
 #' @description 
 #' Function takes configuration of benchmark list and runs benchmark. 
 #' @param config a list written by user or read from YAML configuration file.
+#' @export
 
 run_benchmark = function(config) {
   parsed_config = 
     parse_config(config)
-  expand.grid(
+  tibble::tibble(
               method = parsed_config$methods_sym,
-              id = parsed_config$methods
+              id = parsed_config$ids
               ) %>%
     purrr::pmap(function(method, id) {
       benchmark_parallel(
@@ -19,7 +20,9 @@ run_benchmark = function(config) {
                      .dims = parsed_config$dims,
                      .rep = parsed_config$repnum,
                      .cpupc = parsed_config$cpu,
-                     .method_id = id
+                     .method_id = id,
+                     .dest = parsed_config$dest,
+                     .twilio = parsed_config$twilio
       )
     })
 }

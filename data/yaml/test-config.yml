@@ -1,10 +1,31 @@
 methods:
-  - cma_es_sigma_quant
+     1:
+       algorithm: "cma_es_sigma_quant"
+       params:
+         - "quant_val"
+         - "sigma"
+       values:
+         - 0.09
+         - 5
+     2:
+       algorithm: "cma_es_sigma_quant"
+       params:
+         - "quant_val"
+         - "sigma"
+       values:
+         - 0.15
+         - 1
+ids:
+  - "quant-0-09"
+  - "quant-0-15"
 probnum:
-  - 1
-  - 2
+  - 14
+  - 15
 dims:
   - 2
 cec: 13
 repnum: 1
 cpupc: 0.75
+source: "~/Desktop/Cs/PhD/CECBench/R"
+dest: "~/Desktop/Cs/PhD/benchmarks"
+twilio: "~/Desktop/Cs/PhD/cma-es-exp/.twilio-meta"

@@ -4,7 +4,7 @@
 \alias{save_results}
 \title{Save benchmark results}
 \usage{
-save_results(x, cec, id, prob, dim, label, type)
+save_results(x, cec, id, prob, dim, label, type, dest)
 }
 \arguments{
 \item{x}{result vector or matrix}

@@ -1,4 +1,8 @@
-cma_es_sigma_quant <- function(par, fn, ..., lower, upper, quant_val=0.09, CMA = TRUE, control=list()) {
+
+#' @export
+
+cma_es_sigma_quant <- function(par, fn, ..., lower, upper, CMA = TRUE, control=list()) {
+
 
   norm <- function(x)
     drop(sqrt(crossprod(x)))
@@ -58,6 +62,8 @@ cma_es_sigma_quant <- function(par, fn, ..., lower, upper, quant_val=0.09, CMA =
                               + (1-1/mucov) * ((2*mucov-1)/((N+2)^2+2*mucov)))
   damps       <- controlParam("damps",
                               1 + 2*max(0, sqrt((mueff-1)/(N+1))-1) + cs)
+
+  quant_val   <- controlParam("quant_val", 0.09)
   
   ## Safety checks:
   stopifnot(length(upper) == N)  
@@ -248,7 +254,7 @@ cma_es_sigma_quant <- function(par, fn, ..., lower, upper, quant_val=0.09, CMA =
               counts=cnt,
               convergence=ifelse(iter >= maxiter, 1L, 0L),
               message=msg,
-              label="cma-es-sigma-quant",
+              label = stringr::str_glue("cma-es-sigma-quant-{quant_val}"),
               constr.violations=cviol,
               diagnostic=log
   )
