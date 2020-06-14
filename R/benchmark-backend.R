@@ -18,7 +18,7 @@ benchmark_parallel = function(.method, .probnum, .dims,
                               .write_flag = TRUE, .method_id,
                               .dest, .twilio) {
   cli::cli_alert("(problem, dimension, repetition)\n")
-  send_sms(.twilio, "start benchmark", .method_id) 
+#  send_sms(.twilio, "start benchmark", .method_id) 
   if (.cec == 17) {
     scores = seq(100, 3000, by = 100)
   } else {
@@ -78,7 +78,7 @@ benchmark_parallel = function(.method, .probnum, .dims,
       }
     }
   }
-  send_sms(.twilio, "end", .method_id) 
+  #send_sms(.twilio, "end", .method_id) 
   doParallel::stopImplicitCluster()
 }
 
