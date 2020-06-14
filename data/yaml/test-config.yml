@@ -15,9 +15,18 @@ methods:
        values:
          - 0.15
          - 1
+     3: 
+       algorithm: "cma_es_sigma_quant"
+       params:
+         - "quant_val"
+         - "sigma"
+       values:
+         - 0.40
+         - 2
 ids:
-  - "quant-0-09"
-  - "quant-0-15"
+  - "cma-es-sigma-quant-0-09"
+  - "cma-es-sigma-quant-0-15"
+  - "cma-es-sigma-quant-new"
 probnum:
   - 14
   - 15

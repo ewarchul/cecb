@@ -18,9 +18,7 @@ benchmark_parallel = function(.method, .probnum, .dims,
                               .write_flag = TRUE, .method_id,
                               .dest, .twilio) {
   cli::cli_alert("(problem, dimension, repetition)\n")
-  benchmark_id = 
-    paste(.method_id, Sys.Date(), sep = "-")
-  send_sms(.twilio, "start benchmark", benchmark_id) 
+  send_sms(.twilio, "start benchmark", .method_id) 
   if (.cec == 17) {
     scores = seq(100, 3000, by = 100)
   } else {
@@ -75,12 +73,12 @@ benchmark_parallel = function(.method, .probnum, .dims,
       } 
       print_stats(resultVector)
       if (.write_flag) {
-        save_results(resultVector, .cec, benchmark_id, n, d, result$label, "N", .dest)
-        save_results(informMatrix, .cec, benchmark_id, n, d, result$label, "M", .dest)
+        save_results(resultVector, .cec, .method_id, n, d, "N", .dest)
+        save_results(informMatrix, .cec, .method_id, n, d, "M", .dest)
       }
     }
   }
-  send_sms(.twilio, "end", benchmark_id) 
+  send_sms(.twilio, "end", .method_id) 
   doParallel::stopImplicitCluster()
 }
 
@@ -181,9 +179,9 @@ print_stats = function(vec) {
 #' @param type result type :: String
 #' @export
 
-save_results = function(x, cec, id, prob, dim, label, type, dest) {
+save_results = function(x, cec, id, prob, dim, type, dest) {
   dirpath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
-  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}-{label}.txt")
+  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}.txt")
   if (!dir.exists(dirpath))
     dir.create(dirpath, recursive = TRUE)
   write.table(x, file = filepath, sep = ",", col.names = FALSE, row.names = FALSE)

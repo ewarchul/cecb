@@ -19,19 +19,16 @@ extract_method = function(id) {
 #' @param .ids benchmark ids :: [String]
 #' @param .probnum problem number :: [Int]
 #' @param .dim dimensionality of problem :: Int
-#' @param .cec version of CEC benchmark :: Int 
+#' @param .source version of CEC benchmark :: Int 
 #' @export
 
-get_result = function(.probnum, .ids, .dim, .cec) {
+get_result = function(.probnum, .ids, .dim, .source) {
     methods =
-        .ids %>%
-        purrr::map_chr(extract_method)
+        .ids 
     .ids %>%
     purrr::map(function(id) {
-      method = 
-        extract_method(id)
       filepath = 
-        stringr::str_glue("../data/cec{.cec}/{id}/M/M-{.probnum}-D-{.dim}-{method}.txt")
+        stringr::str_glue("{.source}/{id}/M/M-{.probnum}-D-{.dim}.txt")
       read.table(file = filepath, sep = ",")
       }) %>% 
     purrr::set_names(methods)
@@ -132,15 +129,15 @@ get_ms = function(.ecdf, .rep) {
 #' @param .dim dimensionality of problem :: Int
 #' @param .ids benchmark ids :: [String]
 #' @param .probnums problem numbers :: [Int]
-#' @param .cec version of CEC benchmark :: Int 
+#' @param .source version of CEC benchmark :: Int 
 #' @param .rep number of repetition
 #' @param .bsteps fraction of evaluation function budget
 #' @export
 
-generate_df = function(.dim, .ids, .probnums, .cec = "13", .rep = 51, .bsteps = c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)) {
+generate_df = function(.dim, .ids, .probnums, .source, .rep = 51, .bsteps = c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)) {
   results = 
     .probnums %>%
-    purrr::map(get_result, .ids, .dim, .cec) 
+    purrr::map(get_result, .ids, .dim, .source) 
   ecdf_vals = 
     results %>%
     purrr::map(get_ecdf)
@@ -148,8 +145,7 @@ generate_df = function(.dim, .ids, .probnums, .cec = "13", .rep = 51, .bsteps = 
     ecdf_vals %>% 
     get_ms(.rep)
   methods = 
-    .ids %>%
-    purrr::map_chr(extract_method)
+    .ids
   get_mincnt(methods, results, ecdf_vals, .probnums, .bsteps, .rep, .max_succ = ecdf_ms)
 }
 

@@ -4,7 +4,7 @@
 \alias{save_results}
 \title{Save benchmark results}
 \usage{
-save_results(x, cec, id, prob, dim, label, type, dest)
+save_results(x, cec, id, prob, dim, type, dest)
 }
 \arguments{
 \item{x}{result vector or matrix}
@@ -17,9 +17,9 @@ save_results(x, cec, id, prob, dim, label, type, dest)
 
 \item{dim}{dimension of given problem :: Int}
 
-\item{label}{label of algorithm :: String}
-
 \item{type}{result type :: String}
+
+\item{label}{label of algorithm :: String}
 }
 \description{
 Function saves result of benchmark to text file.

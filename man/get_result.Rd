@@ -4,7 +4,7 @@
 \alias{get_result}
 \title{Load data}
 \usage{
-get_result(.probnum, .ids, .dim, .cec)
+get_result(.probnum, .ids, .dim, .source)
 }
 \arguments{
 \item{.probnum}{problem number :: [Int]}
@@ -13,7 +13,7 @@ get_result(.probnum, .ids, .dim, .cec)
 
 \item{.dim}{dimensionality of problem :: Int}
 
-\item{.cec}{version of CEC benchmark :: Int}
+\item{.source}{version of CEC benchmark :: Int}
 }
 \description{
 Function reads results of given benchmark from file.
