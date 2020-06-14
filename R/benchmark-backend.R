@@ -17,6 +17,8 @@ benchmark_parallel = function(.method, .probnum, .dims,
                               .rep, .cec = 17, .cpupc = .75,
                               .write_flag = TRUE, .method_id,
                               .dest, .twilio) {
+  suppressMessages(library(foreach))
+  suppressMessages(library(doParallel))
   cli::cli_alert("(problem, dimension, repetition)\n")
 #  send_sms(.twilio, "start benchmark", .method_id) 
   if (.cec == 17) {
