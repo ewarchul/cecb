@@ -10,9 +10,9 @@ devtools::install_github("warbarbye/CECBench")
 
 ## Introduction
 
-`cecb` is a tiny framework for testing optimization algorithms in a parallel manner. It provides a bunch of method which simplify workflow with CEC benchmarks. All you have to do is:
+`cecb` is a tiny framework for testing optimization algorithms in a parallel manner. It provides a bunch of methods that simplify workflow with CEC benchmarks. All you have to do is:
 
-* write benchmark configuration file in YAML
+* write a benchmark configuration file in YAML
 * run benchmark via `cecb::run_benchmark()` function
 * do some magic with results.
 
@@ -23,10 +23,10 @@ devtools::install_github("warbarbye/CECBench")
 Mainly package is devoted to population-based optimization algorithms in real space but there is no issue to use it with any type of optim-method. 
 There are two restrictions imposed on your algorithm:
 
-1. it has to return named list with `bestVal` key which contains best value recoreded in each iteration
-2. it has to return named list with `value` key which contains best value across whole iterations.
+1. it has to return named list with `bestVal` key which contains the best value recorded in each iteration
+2. it has to return named list with `value` key which contains the best value across whole iterations.
 
-In other words, your algorithm function should return object like below:
+In other words, your algorithm function should return an object like below:
 
 ```r
 return(
@@ -82,18 +82,17 @@ where:
 
 * `methods` stands for optim-methods you are going to test
 * `1`, `2`, `...` are ordinal numbers of tested functions
-* `algorithm` is a name of your method. It has to be identical to file name with source code
+* `algorithm` is the name of your method. It has to be identical to filename with source code
 * `params` is a list of names of algorithm parameters
 * `values` are values of that parameters 
 * `ids` contains literal IDs of benchmark
-* `probnum` are function number in benchmark's problem set
+* `probnum` is function number in benchmark's problem set
 * `dims` contains dimensionality of function
-* `cpupc` is percent of used CPU cores
+* `cpupc` is the percent of used CPU cores
 * `source` place where your algorithms live
-* `dest` place where results of benchmark will live 
+* `dest` place where results of the benchmark will live 
 
 ## ECDF curves
 
 TODO
-
 
