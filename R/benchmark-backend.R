@@ -20,7 +20,6 @@ benchmark_parallel = function(.method, .probnum, .dims,
   suppressMessages(library(foreach))
   suppressMessages(library(doParallel))
   cli::cli_alert("(problem, dimension, repetition)\n")
-#  send_sms(.twilio, "start benchmark", .method_id) 
   if (.cec == 17) {
     scores = seq(100, 3000, by = 100)
   } else {
@@ -80,7 +79,6 @@ benchmark_parallel = function(.method, .probnum, .dims,
       }
     }
   }
-  #send_sms(.twilio, "end", .method_id) 
   doParallel::stopImplicitCluster()
 }
 
@@ -197,7 +195,6 @@ save_results = function(x, cec, id, prob, dim, type, dest) {
 #' @param filepath path to Twilio auth configuration :: String
 #' @param type type of message i.e 'start' or 'end' of benchmark :: String
 #' @param id benchmark id :: String
-#' @export
 
 send_sms = function(filepath, type, id) {
   if (type == "start")
