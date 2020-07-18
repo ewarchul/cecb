@@ -15,11 +15,11 @@
 
 benchmark_parallel = function(.method, .probnum, .dims,
                               .rep, .cec = 17, .cpupc = .75,
-                              .write_flag = TRUE, .method_id,
-                              .dest) {
+                              .write_flag = TRUE, .method_id) {
   suppressMessages(library(foreach))
   suppressMessages(library(doParallel))
   cli::cli_alert("(problem, dimension, repetition)\n")
+  bench_start = Sys.time()
   if (.cec == 17) {
     scores = seq(100, 3000, by = 100)
   } else {
@@ -30,15 +30,21 @@ benchmark_parallel = function(.method, .probnum, .dims,
     floor(.cpupc * parallel::detectCores())
   doParallel::registerDoParallel(no_cores)
 
+  benchmark_state = 
+    collections::dict()
+  problem_state = 
+    collections::dict()
+
   for (d in .dims) {
     results <- foreach::foreach(
       n = .probnum,
       .combine = c,
-      .export = c("scores", "d", ".cec")
+      .export = c("scores", "d", ".cec", "problem_state")
     ) %dopar% {
       resultVector <- c()
       resets <- c()
       informMatrix <- matrix(0, nrow = 14, ncol = .rep)
+      iteration_state = collections::dict()
       for (i in 1:.rep) {
         time_start = Sys.time()
         result <- tryCatch(
@@ -71,15 +77,17 @@ benchmark_parallel = function(.method, .probnum, .dims,
         time_end = round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
         cli::cli_alert_success("Done {.method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
 
+        iteration_state$set(i, informMatrix[,i])
       } 
-      print_stats(resultVector)
-      if (.write_flag) {
-        save_results(resultVector, .cec, .method_id, n, d, "N", .dest)
-        save_results(informMatrix, .cec, .method_id, n, d, "M", .dest)
-      }
+      problem_state$set(n, iteration_state$as_list())$as_list()
     }
+    benchmark_state$set(d, results) 
   }
   doParallel::stopImplicitCluster()
+  list(
+      data_comp =  benchmark_state$as_list(),
+      time = round(as.numeric(Sys.time() - bench_start, unit = "mins"), 2)
+  )
 }
 
 #' YAML config parser
@@ -179,13 +187,32 @@ print_stats = function(vec) {
 #' @param type result type :: String
 #' @export
 
-save_results = function(x, cec, id, prob, dim, type, dest) {
-  dirpath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
-  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}.txt")
+save_results = function(x, dest, filename) {
+  dirpath = 
+    dest %++% '/' %++% filename %++% '/' 
+  filepath = 
+    dest %++% '/' %++% filename %++% '/' %++% filename %++% '.json'
   if (!dir.exists(dirpath))
     dir.create(dirpath, recursive = TRUE)
-  write.table(x, file = filepath, sep = ",", col.names = FALSE, row.names = FALSE)
+  print(x)
+  x %>%
+   jsonlite::toJSON() %>%
+   base::write(file = filepath) 
 }
+
+'%++%' = function(str1, str2) {
+  paste0(str1, str2)
+}
+
+#' TODO
+
+save_metadata = function(dest, filename, info) {
+  filepath = 
+    dest %++% '/' %++% filename %++% '/' %++% filename %++% '.RDS'
+  info %>%
+  readr::write_rds(filepath)
+}
+
 
 #' Send SMS
 #'

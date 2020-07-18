@@ -13,16 +13,31 @@ run_benchmark = function(config) {
               id = parsed_config$ids
               ) %>%
     purrr::pmap(function(method, id) {
-      benchmark_parallel(
+      c(bench_data, time) %<-% 
+        benchmark_parallel(
                      .method = method,
                      .probnum = parsed_config$probnum,
                      .cec = parsed_config$cec,
                      .dims = parsed_config$dims,
                      .rep = parsed_config$repnum,
                      .cpupc = parsed_config$cpu,
-                     .method_id = id,
-                     .dest = parsed_config$dest,
-                     .twilio = parsed_config$twilio
+                     .method_id = id
       )
+      if(parsed_config$save == 1)
+        bench_data %T>% 
+          save_results(
+            dest = parsed_config$dest,
+            filename = id
+          )
+        save_metadata(
+            dest = parsed_config$dest,
+            filename = id,
+            info = 
+              list(
+                method = method,
+                time = time,
+                id = id
+              )
+        )
     })
 }
