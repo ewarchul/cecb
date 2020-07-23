@@ -200,10 +200,6 @@ save_results = function(x, dest, filename) {
    base::write(file = filepath) 
 }
 
-'%++%' = function(str1, str2) {
-  paste0(str1, str2)
-}
-
 #' TODO
 
 save_metadata = function(dest, filename, info) {

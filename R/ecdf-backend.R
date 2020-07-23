@@ -1,3 +1,66 @@
+'%++%' = function(str1, str2) {
+  paste0(str1, str2)
+}
+
+'%<~%' = zeallot::'%<-%'
+
+get_bench_setting = function(json) {
+  dims = 
+    names(json)
+  problems =
+    json %>% 
+      purrr::pluck(dims[1]) %>%
+      names()
+  list(dims, problems)
+}
+
+parse_json = function(bench_json) {
+  c(dims, probnums) %<-%
+    get_bench_setting(bench_json)
+  expand.grid(
+              dim = dims,
+              func = probnums
+  ) %>%
+  purrr::pmap(function(dim, func) {
+   func_df = 
+      bench_json %>%
+      purrr::pluck(dim, func) %>%
+      tibble::enframe() %>%
+      tidyr::unnest(cols = c(value)) %>%
+      tidyr::unnest(cols = c(value)) ## unnest column val :: [[dbl]]
+   func_df %>%
+      dplyr::group_by(name) %>%
+      dplyr::group_map(function(val, ...) val) %>%
+      purrr::reduce(dplyr::bind_cols) %>% 
+      purrr::set_names(function(cname) {
+        rep_num = 
+          stringr::str_extract(cname, "[1-9]+") 
+        "Rep" %++% rep_num
+      }) %>%
+      dplyr::mutate(Dimension = dim, Function = func)
+  }) %>%
+  dplyr::bind_rows()
+}
+
+
+compute_ecdf = function(dfx, fn) {
+  dfx %>%
+    dplyr::group_by(Dimension, Function) %>%
+    dplyr::group_map(function(val, ...) {
+      val %>%
+        list() %>%
+        get_ecdf()
+    })
+}
+
+compute_ms = function(dfx) {
+  reps = 
+    base::length(dfx)
+  dfx %>%
+    list() %>%
+    get_ms(reps)
+}
+
 #' Extract method name
 #'
 #' @description 
@@ -16,8 +79,8 @@ extract_method = function(id) {
 #' 
 #' @description
 #' Function reads results of given benchmark from file.
-#' @param .ids benchmark ids :: [String]
 #' @param .probnum problem number :: [Int]
+#' @param .ids benchmark ids :: [String]
 #' @param .dim dimensionality of problem :: Int
 #' @param .source version of CEC benchmark :: Int 
 #' @export
@@ -29,6 +92,7 @@ get_result = function(.probnum, .ids, .dim, .source) {
     purrr::map(function(id) {
       filepath = 
         stringr::str_glue("{.source}/{id}/M/M-{.probnum}-D-{.dim}.txt")
+      print(filepath)
       read.table(file = filepath, sep = ",")
       }) %>% 
     purrr::set_names(methods)
@@ -134,10 +198,11 @@ get_ms = function(.ecdf, .rep) {
 #' @param .bsteps fraction of evaluation function budget
 #' @export
 
-generate_df = function(.dim, .ids, .probnums, .source, .rep = 51, .bsteps = c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)) {
+generate_df_txt = function(.dim, .ids, .probnums, .source, .rep = 51, .bsteps = c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)) {
   results = 
     .probnums %>%
     purrr::map(get_result, .ids, .dim, .source) 
+  return(results)
   ecdf_vals = 
     results %>%
     purrr::map(get_ecdf)
@@ -147,6 +212,18 @@ generate_df = function(.dim, .ids, .probnums, .source, .rep = 51, .bsteps = c(0.
   methods = 
     .ids
   get_mincnt(methods, results, ecdf_vals, .probnums, .bsteps, .rep, .max_succ = ecdf_ms)
+}
+
+generate_df_json = function(idpaths) {
+  json_data = 
+    load_json(idpaths)
+  ecdf = 
+    json_data %>%
+    compute_ecdf()
+  ms =
+    ecdf %>%
+    compute_ms()
+  get_mincnt(methods, results, ecdf, ...)
 }
 
 #' Save plot

@@ -1,7 +1,6 @@
-
 #' @export
 
-cma_es_sigma_quant <- function(par, fn, ..., lower, upper, CMA = TRUE, control=list()) {
+cma_es_quant <- function(par, fn, ..., lower, upper, CMA = TRUE, control=list()) {
 
 
   norm <- function(x)
