@@ -1,14 +1,12 @@
 #' Save benchmark results
 #' 
 #' @description
-#' Function saves result of benchmark to text file.
+#' Function saves result of benchmark to JSON file. If given dirpath doesn't exist function creates it. 
 #' @param x result vector or matrix
-#' @param cec CEC version :: Int
-#' @param id benchmark id :: String
-#' @param prob problem number :: Int
-#' @param dim dimension of given problem :: Int
-#' @param label label of algorithm :: String
-#' @param type result type :: String
+#' @param dest path to directory 
+#' @param filename
+#' @param filename name of json file
+#' @return IO :: ()  
 #' @export
 
 save_results = function(x, dest, filename) {
@@ -16,15 +14,27 @@ save_results = function(x, dest, filename) {
     dest %++% '/' %++% filename %++% '/' 
   filepath = 
     dest %++% '/' %++% filename %++% '/' %++% filename %++% '.json'
+
   if (!dir.exists(dirpath))
     dir.create(dirpath, recursive = TRUE)
-  print(x)
   x %>%
    jsonlite::toJSON() %>%
    base::write(file = filepath) 
 }
 
-#' TODO
+#' Save metadata 
+#' 
+#' @description
+#' Function save serialized benchmark's metadata. Created RDS file contains:
+#' - benchmarked method written as a closure
+#' - time of benchmark execution in minutes
+#' - id of benchmark.
+#' 
+#' @param dest path to directory 
+#' @param filename name of file with metadata
+#' @param info list with stored objects
+#' @return IO :: ()  
+#' @export
 
 save_metadata = function(dest, filename, info) {
   filepath = 
