@@ -3,7 +3,6 @@
 #' @description
 #' Function prints on STDIN basic statistics of benchmark result vector.
 #' @param vec vector with results
-#' @export
 
 print_stats = function(vec) {
   cat(stringr::str_interp(

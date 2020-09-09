@@ -23,21 +23,23 @@ run_benchmark = function(config) {
                      .cpupc = parsed_config$cpu,
                      .method_id = id
       )
+
       if(parsed_config$save == 1)
         bench_data %T>% 
           save_results(
             dest = parsed_config$dest,
             filename = id
           )
-        save_metadata(
-            dest = parsed_config$dest,
-            filename = id,
-            info = 
-              list(
-                method = method,
-                time = time,
-                id = id
-              )
-        )
-    })
+      save_metadata(
+          dest = parsed_config$dest,
+          filename = id,
+          info = 
+            list(
+              method = method,
+              time = time,
+              id = id
+            )
+      )
+    }
+	)
 }

@@ -10,7 +10,6 @@
 #' @param .rep amount of repetition :: Int
 #' @param .cec year of benchmark :: Int
 #' @param .cpupc CPU usage in pct :: Int
-#' @export
 #' @importFrom foreach "%dopar%"
 
 benchmark_parallel = function(.method,
