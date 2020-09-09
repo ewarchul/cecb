@@ -15,7 +15,7 @@ get_bench_setting = function(json) {
 }
 
 parse_json = function(bench_json) {
-  c(dims, probnums) %<-%
+  c(dims, probnums) %<~%
     get_bench_setting(bench_json)
   expand.grid(
               dim = dims,
@@ -42,23 +42,46 @@ parse_json = function(bench_json) {
   dplyr::bind_rows()
 }
 
-
-compute_ecdf = function(dfx, fn) {
+get_group_param = function(dfx, vars, fn) {
   dfx %>%
-    dplyr::group_by(Dimension, Function) %>%
-    dplyr::group_map(function(val, ...) {
-      val %>%
-        list() %>%
-        get_ecdf()
-    })
+    dplyr::group_by_at(vars) %>%
+    dplyr::group_modify(function(val, ...) {
+      fn(val)
+  }) %>%
+    dplyr::ungroup()
+}
+
+
+compute_ecdf = function(dfx) {
+  dfx %>%
+    get_group_param(
+      c("Dimension", "Function"),
+      function(x) {
+        x %>%
+          list() %>%
+          get_ecdf() %>%
+          tibble::tibble(
+          Ecdf = . 
+        )
+      }
+    )
 }
 
 compute_ms = function(dfx) {
   reps = 
     base::length(dfx)
   dfx %>%
-    list() %>%
-    get_ms(reps)
+    get_group_param(
+      c("Dimension"),
+      function(x) {
+        x %>%
+          dplyr::select(Ecdf) %>%
+          get_ms(reps) %>%
+          tibble::tibble(
+            Ms = .
+          )
+      }
+    )
 }
 
 #' Extract method name
@@ -174,6 +197,10 @@ get_mincnt = function(.methods, .results, .ecdf, .probnums, .bsteps, .rep, .max_
     dplyr::ungroup()
 }
 
+compute_mincnt = function(dfx, steps) {
+  dfx 
+}
+
 #' TODO 
 #' @export
 
@@ -215,6 +242,8 @@ generate_df_txt = function(.dim, .ids, .probnums, .source, .rep = 51, .bsteps = 
 }
 
 generate_df_json = function(idpaths) {
+  bsteps = 
+    c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)
   json_data = 
     load_json(idpaths)
   ecdf = 
@@ -223,7 +252,14 @@ generate_df_json = function(idpaths) {
   ms =
     ecdf %>%
     compute_ms()
-  get_mincnt(methods, results, ecdf, ...)
+  get_mincnt(
+    .max_succ = ms,
+    .bsteps = bsteps,
+    .rep = reps,
+    .probnums = fns,
+    ecdf_vals = ecdf,
+    results = 
+  )
 }
 
 #' Save plot

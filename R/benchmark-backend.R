@@ -13,11 +13,14 @@
 #' @export
 #' @importFrom foreach "%dopar%"
 
-benchmark_parallel = function(.method, .probnum, .dims,
-                              .rep, .cec = 17, .cpupc = .75,
-                              .write_flag = TRUE, .method_id) {
-  suppressMessages(library(foreach))
-  suppressMessages(library(doParallel))
+benchmark_parallel = function(.method,
+															.probnum,
+															.dims,
+                              .rep,
+															.cec = 17,
+															.cpupc = .75,
+                              .write_flag = TRUE,
+															.method_id) {
   cli::cli_alert("(problem, dimension, repetition)\n")
   bench_start = Sys.time()
   if (.cec == 17) {
@@ -25,7 +28,6 @@ benchmark_parallel = function(.method, .probnum, .dims,
   } else {
     scores = c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
   }
-
   no_cores =
     floor(.cpupc * parallel::detectCores())
   doParallel::registerDoParallel(no_cores)
@@ -90,147 +92,5 @@ benchmark_parallel = function(.method, .probnum, .dims,
   )
 }
 
-#' YAML config parser
-#'
-#' @description 
-#' Function parses YAML configuration file. 
-#' @param filename name of config file :: String
-#' @export
-
-parse_yaml_config = function(filename) {
-  config = 
-    yaml::read_yaml(filename)
-  alg_num = 
-    length(config$methods)
-  alg_names = 
-    extract_names(alg_num, config$methods)
-
-  alg_names %>%
-    purrr::walk(function(method) {
-      source(paste0(config$source, "/", stringr::str_replace_all(method, "_", "-"), ".R"))
-    })
-
-  config$methods_sym = 
-    extract_algorithm(alg_num, config$methods)
-  config
-}
-
-#' @export
-
-extract_names = function(amount, algs) {
-  1:amount %>%
-    purrr::map_chr(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      alg$algorithm
-    })
-}
-
-#' @export
-
-extract_algorithm = function(amount, algs) {
-  1:amount %>%
-    purrr::map(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      base_func = 
-        base::get(alg$algorithm)
-      param_set = 
-        setNames(as.list(alg$values), alg$params)
-      purrr::partial(base_func, control = param_set)
-    })
-}
-
-#' Config parser
-#'
-#' @description 
-#' Function parses benchmark configuration file.
-#' @param config config list
-#' @export
-
-parse_config = function(config) {
-  if (is.list(config))
-    config
-  else
-    parse_yaml_config(config)
-}
-
-#' Benchmark results basic stats
-#'
-#' @description
-#' Function prints on STDIN basic statistics of benchmark result vector.
-#' @param vec vector with results
-#' @export
-
-print_stats = function(vec) {
-  cat(stringr::str_interp(
-"Statistics:
-  Median: ${median(vec)}
-  Mean: ${mean(vec)}
-  Max: ${max(vec)}
-  Min: ${min(vec)}
-  Std: ${sd(vec)}\n"
-      )
-  )
-}
-
-#' Save benchmark results
-#' 
-#' @description
-#' Function saves result of benchmark to text file.
-#' @param x result vector or matrix
-#' @param cec CEC version :: Int
-#' @param id benchmark id :: String
-#' @param prob problem number :: Int
-#' @param dim dimension of given problem :: Int
-#' @param label label of algorithm :: String
-#' @param type result type :: String
-#' @export
-
-save_results = function(x, dest, filename) {
-  dirpath = 
-    dest %++% '/' %++% filename %++% '/' 
-  filepath = 
-    dest %++% '/' %++% filename %++% '/' %++% filename %++% '.json'
-  if (!dir.exists(dirpath))
-    dir.create(dirpath, recursive = TRUE)
-  print(x)
-  x %>%
-   jsonlite::toJSON() %>%
-   base::write(file = filepath) 
-}
-
-#' TODO
-
-save_metadata = function(dest, filename, info) {
-  filepath = 
-    dest %++% '/' %++% filename %++% '/' %++% filename %++% '.RDS'
-  info %>%
-  readr::write_rds(filepath)
-}
 
 
-#' Send SMS
-#'
-#' @description 
-#' Function sends SMS with information about status of benchmark.
-#' It reads number and Twilio auth from .twilio-meta file.
-#' @param filepath path to Twilio auth configuration :: String
-#' @param type type of message i.e 'start' or 'end' of benchmark :: String
-#' @param id benchmark id :: String
-
-send_sms = function(filepath, type, id) {
-  if (type == "start")
-    body = stringr::str_glue("Benchmark {id} start")
-  else
-    body = stringr::str_glue("Benchmark {id} end")
-  config =
-    yaml::read_yaml(filepath)
-  Sys.setenv(TWILIO_SID = config$sid)
-  Sys.setenv(TWILIO_TOKEN = config$token)
-  twilio::tw_send_message(
-    to = config$to_number,
-    from = config$from_number,
-    body = body 
-    )
-}
