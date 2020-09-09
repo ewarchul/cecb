@@ -1,7 +1,7 @@
 #' Run benchmark parallely
 #'
-#' @description 
-#' Function runs benchmark `.cec` on `.method` for given test functions and dimensionality. 
+#' @description
+#' Function runs benchmark `.cec` on `.method` for given test functions and dimensionality.
 #' Evalution on each function is repeated `.rep` times. User is able to
 #' specify usage of CPU cores by `.cpupc` arg.
 #' @param .method optimization algorithm :: function
@@ -12,28 +12,28 @@
 #' @param .cpupc CPU usage in pct :: Int
 #' @importFrom foreach "%dopar%"
 
-benchmark_parallel = function(.method,
-															.probnum,
-															.dims,
-                              .rep,
-															.cec = 17,
-															.cpupc = .75,
-                              .write_flag = TRUE,
-															.method_id) {
+benchmark_parallel <- function(.method,
+                               .probnum,
+                               .dims,
+                               .rep,
+                               .cec = 17,
+                               .cpupc = .75,
+                               .write_flag = TRUE,
+                               .method_id) {
   cli::cli_alert("(problem, dimension, repetition)\n")
-  bench_start = Sys.time()
+  bench_start <- Sys.time()
   if (.cec == 17) {
-    scores = seq(100, 3000, by = 100)
+    scores <- seq(100, 3000, by = 100)
   } else {
-    scores = c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
+    scores <- c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
   }
-  no_cores =
+  no_cores <-
     floor(.cpupc * parallel::detectCores())
   doParallel::registerDoParallel(no_cores)
 
-  benchmark_state = 
+  benchmark_state <-
     collections::dict()
-  problem_state = 
+  problem_state <-
     collections::dict()
 
   for (d in .dims) {
@@ -45,9 +45,9 @@ benchmark_parallel = function(.method,
       resultVector <- c()
       resets <- c()
       informMatrix <- matrix(0, nrow = 14, ncol = .rep)
-      iteration_state = collections::dict()
+      iteration_state <- collections::dict()
       for (i in 1:.rep) {
-        time_start = Sys.time()
+        time_start <- Sys.time()
         result <- tryCatch(
           {
             cli::cli_alert_info("Start {.method_id}: ({n}, {d}, {i})\n")
@@ -75,21 +75,18 @@ benchmark_parallel = function(.method,
         for (bb in 1:length(recordedTimes)) {
           informMatrix[bb, i] <- abs(result$diagnostic$bestVal[recordedTimes[bb] * ceiling(nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
-        time_end = round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
+        time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
         cli::cli_alert_success("Done {.method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
 
-        iteration_state$set(i, informMatrix[,i])
-      } 
+        iteration_state$set(i, informMatrix[, i])
+      }
       problem_state$set(n, iteration_state$as_list())$as_list()
     }
-    benchmark_state$set(d, results) 
+    benchmark_state$set(d, results)
   }
   doParallel::stopImplicitCluster()
   list(
-      data_comp =  benchmark_state$as_list(),
-      time = round(as.numeric(Sys.time() - bench_start, unit = "mins"), 2)
+    data_comp = benchmark_state$as_list(),
+    time = round(as.numeric(Sys.time() - bench_start, unit = "mins"), 2)
   )
 }
-
-
-
