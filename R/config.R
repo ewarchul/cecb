@@ -1,3 +1,17 @@
+#' Config parser
+#'
+#' @description 
+#' Function parses benchmark configuration file.
+#' @param config config list
+#' @export
+
+parse_config = function(config) {
+  if (is.list(config))
+    config
+  else
+    parse_yaml_config(config)
+}
+
 #' YAML config parser
 #'
 #' @description 
@@ -23,7 +37,12 @@ parse_yaml_config = function(filename) {
   config
 }
 
-#' @export
+#' Extract algorithms names
+#' @description 
+#' Function extracts names of algorithm from given config file.
+#' @param amount amount of benchmarked algorithms
+#' @param algs list of closures
+#' @return list of algorithm names
 
 extract_names = function(amount, algs) {
   1:amount %>%
@@ -34,7 +53,12 @@ extract_names = function(amount, algs) {
     })
 }
 
-#' @export
+#' Extract algorithm closure
+#' @description
+#' Function extracts algorithms as a closures and sets their parameters. 
+#' @param amount amount of benchmarked algorithms
+#' @param algs list of closures
+#' @return list of partial functions 
 
 extract_algorithm = function(amount, algs) {
   1:amount %>%
@@ -47,18 +71,4 @@ extract_algorithm = function(amount, algs) {
         setNames(as.list(alg$values), alg$params)
       purrr::partial(base_func, control = param_set)
     })
-}
-
-#' Config parser
-#'
-#' @description 
-#' Function parses benchmark configuration file.
-#' @param config config list
-#' @export
-
-parse_config = function(config) {
-  if (is.list(config))
-    config
-  else
-    parse_yaml_config(config)
 }
