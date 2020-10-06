@@ -13,7 +13,7 @@ run_benchmark <- function(config) {
     id = parsed_config$ids
   ) %>%
     purrr::pmap(function(method, id) {
-      c(bench_data, time) %<-%
+      c(bench_data, time) %<~%
         benchmark_parallel(
           .method = method,
           .probnum = parsed_config$probnum,
@@ -23,7 +23,6 @@ run_benchmark <- function(config) {
           .cpupc = parsed_config$cpu,
           .method_id = id
         )
-
       if (parsed_config$save == 1) {
         bench_data %T>%
           save_results(
@@ -41,5 +40,11 @@ run_benchmark <- function(config) {
             id = id
           )
       )
+		list(
+			data = bench_data,
+			time = time,
+			id = id
+		)
     })
+	
 }

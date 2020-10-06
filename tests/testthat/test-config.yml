@@ -28,6 +28,6 @@ dims:
 cec: 13
 repnum: 2
 cpupc: 0.75
-source: "./R"
-dest: "./data/benchmarks"
+source: "../../R"
+dest: "../../data/benchmarks"
 save: 1
