@@ -13,8 +13,7 @@ benchmark_parallel(
   .cpupc = 0.75,
   .write_flag = TRUE,
   .method_id,
-  .dest,
-  .twilio
+  .dest
 )
 }
 \arguments{

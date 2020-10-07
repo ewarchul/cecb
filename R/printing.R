@@ -4,16 +4,13 @@
 #' Function prints on STDIN basic statistics of benchmark result vector.
 #' @param vec vector with results
 
-print_stats = function(vec) {
+print_stats <- function(vec) {
   cat(stringr::str_interp(
-"Statistics:
+    "Statistics:
   Median: ${median(vec)}
   Mean: ${mean(vec)}
   Max: ${max(vec)}
   Min: ${min(vec)}
   Std: ${sd(vec)}\n"
-      )
-  )
+  ))
 }
-
-
