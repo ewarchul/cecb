@@ -1,22 +1,5 @@
 #' TODO
 
-compute_ecdf <- function(dfx) {
-  dfx %>%
-    get_group_param(
-      c("Dimension", "Function"),
-      function(x) {
-        x %>%
-          list() %>%
-          get_ecdf() %>%
-          tibble::tibble(
-            Ecdf = .
-          )
-      }
-    )
-}
-
-#' TODO
-
 compute_ms <- function(dfx) {
   reps <-
     base::length(dfx)

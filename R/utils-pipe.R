@@ -9,3 +9,12 @@
 #' @importFrom magrittr %>%
 #' @usage lhs \%>\% rhs
 NULL
+#' Tee pipe operator
+#'
+#'
+#' @name %T>%
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %T>%
+#' @usage lhs \%T>\% rhs
+NULL

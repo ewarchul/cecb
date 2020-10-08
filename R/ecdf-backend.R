@@ -47,8 +47,7 @@ get_dfr <- function(idpath, config) {
 #' @param format_handler function to handle specific format file :: integer -> [character] -> integer -> [[numeric]]
 
 generate_dfr <- function(idpaths, config, format_handler) {
-  c(dim, probnums, rep) %<~%
-    config
+  c(dim, probnums, rep) %<~% config
   results <-
     purrr::map(probnums, format_handler, idpaths, dim)
   compute_ecdf(results, idpaths, probnums, rep)
