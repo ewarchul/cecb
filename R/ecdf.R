@@ -1,3 +1,5 @@
+#' TODO
+
 compute_ecdf = function(dfx) {
   dfx %>%
     get_group_param(
@@ -12,6 +14,8 @@ compute_ecdf = function(dfx) {
       }
     )
 }
+
+#' TODO
 
 compute_ms = function(dfx) {
   reps = 
@@ -32,7 +36,6 @@ compute_ms = function(dfx) {
 
 
 #' Compute partial ECDF values
-#' @export
 
 ecdf_leval = function(.result, .maxb, .eps) {
   lhs = 
@@ -49,9 +52,7 @@ ecdf_leval = function(.result, .maxb, .eps) {
   lhs_log
 }
 
-#' Compute partial ECDF values
 #' TODO
-#' @export
 
 ecdf_reval = function(.result, .minb) {
   rhs = 
@@ -67,9 +68,7 @@ ecdf_reval = function(.result, .minb) {
   rhs_log
 }
 
-#' Compute ECDF values
 #' TODO 
-#' @export
 
 get_ecdf = function(.result, .maxb = 14, .minb = 1, .eps = 10^-8) {
   lseq = ecdf_leval(.result, .maxb, .eps)
@@ -77,9 +76,7 @@ get_ecdf = function(.result, .maxb = 14, .minb = 1, .eps = 10^-8) {
   rev(c(1 %o% (10)^(0.2*lseq:rseq)))
 }
 
-#' ugly af and needs refactoring
 #' TODO 
-#' @export
 
 get_mincnt = function(.methods, .results, .ecdf, .probnums, .bsteps, .rep, .max_succ) {
   future::plan(multiprocess)
@@ -112,7 +109,6 @@ compute_mincnt = function(dfx, steps) {
 }
 
 #' TODO 
-#' @export
 
 get_ms = function(.ecdf, .rep) {
   1:length(.ecdf) %>%

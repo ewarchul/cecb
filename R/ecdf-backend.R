@@ -33,6 +33,25 @@ get_dfr = function(idpath, config) {
 		generate_dfr(idpath, config, load_result_txt)
 }
 
+
+#' Compute data frame with ECDF 
+#' 
+#' @description 
+#' Function for given `idpaths` and benchmark `config` generates data frame
+#' with ECDF values. 
+#' @param idpaths list of paths :: [character] 
+#' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
+#' @param format_handler function to handle specific format file :: integer -> [character] -> integer -> [[numeric]] 
+
+generate_dfr = function(idpaths, config, format_handler) {
+	c(dim, probnums, rep) %<~% 
+		config
+	results = 
+    purrr::map(probnums, format_handler, idpaths, dim) 
+	compute_ecdf(results, idpaths, probnums, rep) 
+}
+
+
 #' Compute ECDF values
 #' 
 #' @description 
@@ -60,18 +79,13 @@ compute_ecdf = function(benchmark_data, idpath, probnums, rep) {
 }
 
 
-generate_dfr = function(idpaths, config, format_handler) {
-	c(dim, probnums, rep) %<~% 
-		config
-	results = 
-    purrr::map(probnums, format_handler, idpaths, dim) 
-	compute_ecdf(results, idpaths, probnums, rep) 
-}
-
-#' 
+#' Get benchmark data from JSON 
 #'
-#'
-#'
+#' @description
+#' Function gets benchmark results from previously parsed JSON. 
+#' @param json parsed JSON :: list
+#' @param probnum number of function in benchmark :: integer
+#' @param dim dimensionality of function :: integer
 
 parse_json = function(json, probnum, dim) {
 	json %>% 
@@ -96,7 +110,7 @@ extract_id = function(idpaths) {
 #' 
 #' @description
 #' Function reads results of given benchmark from TXT file.
-#' @param probnum problem number :: [integer]
+#' @param probnum problem number :: integer
 #' @param idpaths benchmark ids :: [character]
 #' @param dim dimensionality of problem :: integer
 #' @export
@@ -116,7 +130,7 @@ load_result_txt = function(probnum, idpaths, dim) {
 #' 
 #' @description
 #' Function reads results of given benchmark from JSON file.
-#' @param probnum problem number :: [integer]
+#' @param probnum problem number :: integer
 #' @param idpaths benchmark ids :: [character]
 #' @param dim dimensionality of problem :: integer
 #' @export
