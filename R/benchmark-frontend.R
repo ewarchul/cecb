@@ -40,11 +40,10 @@ run_benchmark <- function(config) {
             id = id
           )
       )
-		list(
-			data = bench_data,
-			time = time,
-			id = id
-		)
+      list(
+        data = bench_data,
+        time = time,
+        id = id
+      )
     })
-	
 }

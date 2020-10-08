@@ -1,11 +1,11 @@
 #' ECDF plot
-#' 
+#'
 #' @description
 #' Function plots ECDF curves.
 #' @param .dfx data frame with benchmark results
 #' @export
 
-ecdf_plot = function(.dfx) {
+ecdf_plot <- function(.dfx) {
   .dfx %>%
     ggplot2::ggplot(aes(x = Bstep)) +
     ggplot2::geom_point(aes(y = Value, shape = Method, color = Method), size = 0.5) +
@@ -20,5 +20,5 @@ ecdf_plot = function(.dfx) {
       axis.text = element_text(size = 15, face = "bold"),
       legend.text = element_text(size = 15, face = "bold"),
       legend.title = element_text(size = 15, face = "bold"),
-          )
+    )
 }
