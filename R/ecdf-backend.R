@@ -113,7 +113,6 @@ extract_id = function(idpaths) {
 #' @param probnum problem number :: integer
 #' @param idpaths benchmark ids :: [character]
 #' @param dim dimensionality of problem :: integer
-#' @export
 
 load_result_txt = function(probnum, idpaths, dim) {
     idpaths %>%
@@ -133,7 +132,6 @@ load_result_txt = function(probnum, idpaths, dim) {
 #' @param probnum problem number :: integer
 #' @param idpaths benchmark ids :: [character]
 #' @param dim dimensionality of problem :: integer
-#' @export
 
 load_result_json = function(probnum, idpaths, dim) {
 idpaths %>%

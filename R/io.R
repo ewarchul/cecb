@@ -7,7 +7,6 @@
 #' @param filename
 #' @param filename name of json file
 #' @return IO :: ()
-#' @export
 
 save_results <- function(x, dest, filename) {
   dirpath <-
@@ -35,7 +34,6 @@ save_results <- function(x, dest, filename) {
 #' @param filename name of file with metadata
 #' @param info list with stored objects
 #' @return IO :: ()
-#' @export
 
 save_metadata <- function(dest, filename, info) {
   filepath <-
@@ -62,7 +60,6 @@ save_metadata <- function(dest, filename, info) {
 #' @param .name name of pllot
 #' @param .x width of image
 #' @param .y height of image
-#' @export
 
 save_eps <- function(.plot, .name, .x = 6, .y = 6) {
   postscript(file = paste0("../doc/eps/", .name, "-", ".eps"), width = .x, height = .y)
