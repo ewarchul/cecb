@@ -62,7 +62,7 @@ get_ecdf <- function(.result, .maxb = 14, .minb = 1, .eps = 10^-8) {
 #' TODO
 
 get_mincnt <- function(.methods, .results, .ecdf, .probnums, .bsteps, .rep, .max_succ) {
-  future::plan(multiprocess)
+  future::plan(future::multiprocess)
   .methods %>%
     furrr::future_map(function(met) {
       min_cnt <- rep(0, length(.bsteps))

@@ -16,9 +16,9 @@ ecdf_plot <- function(.dfx) {
     ggplot2::ylab("Proportion of function + target pairs") +
     ggplot2::scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.1)) +
     ggplot2::theme(
-      axis.title = element_text(size = 15, face = "bold"),
-      axis.text = element_text(size = 15, face = "bold"),
-      legend.text = element_text(size = 15, face = "bold"),
-      legend.title = element_text(size = 15, face = "bold"),
+      axis.title = ggplot2::element_text(size = 15, face = "bold"),
+      axis.text = ggplot2::element_text(size = 15, face = "bold"),
+      legend.text = ggplot2::element_text(size = 15, face = "bold"),
+      legend.title = ggplot2::element_text(size = 15, face = "bold"),
     )
 }
