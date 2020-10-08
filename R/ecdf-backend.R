@@ -21,6 +21,7 @@ check_format <- function(filepath) {
 #' @param idpath filepath to benchmark data :: [character]
 #' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @return data frame with benchmark data :: tibble
+#' @export
 
 get_dfr <- function(idpath, config) {
   if (missing(config)) {

@@ -27,6 +27,7 @@ Imports:
   here (>= 0.1),
   tibble (>= 3.0.1),
   ggplot2 (>= 3.3.0),
+	zeallot (>= 0.1.0),
   tidyr (>= 1.0.2),
   foreach (>= 1.4.8),
   doParallel (>= 1.0.15),
