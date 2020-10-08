@@ -1,16 +1,18 @@
 # cecb
 
+Library provides methods to run CEC20{13, 17} benchmarks and plot ECDF curves.
+
 ## Installation
 
 This package isn't on CRAN repository, so you have to install it via `devtools`.
 
 ```r
-devtools::install_github("warbarbye/CECBench")
+devtools::install_github("warbarbye/cecb")
 ```
 
 ## Introduction
 
-`cecb` is a tiny framework for testing optimization algorithms in a parallel manner. It provides a bunch of methods that simplify workflow with CEC benchmarks. All you have to do is:
+`cecb` is a tiny library for testing optimization algorithms in a parallel manner. It provides a bunch of methods that simplify workflow with CEC benchmarks. All you have to do is:
 
 * write a benchmark configuration file in YAML
 * run benchmark via `cecb::run_benchmark()` function
@@ -20,29 +22,56 @@ devtools::install_github("warbarbye/CECBench")
 
 ## Algorithms API
 
-Mainly package is devoted to population-based optimization algorithms in real space but there is no issue to use it with any type of optim-method. 
-There are two restrictions imposed on your algorithm:
+Mainly package is devoted to population-based optimization algorithms in real space but there is no issue to use it with any type of optimization method. 
+
+There are some restrictions imposed on your algorithm.
+
+## Input
+
+Algorithm has following parameters: 
+
+```r
+some_alg = function(par, fn, ..., lower, upper) {
+	...
+}
+```
+In above signature `par` stands for a initial point, `fn` for a evaluation function and `lower`, `upper` are boundries for hyperrectangle which sets feasibility region.
+
+
+### Output 
 
 1. it has to return named list with `bestVal` key which contains the best value recorded in each iteration
 2. it has to return named list with `value` key which contains the best value across whole iterations.
 
-In other words, your algorithm function should return an object like below:
+In other words, your algorithm function should return a named list like below:
 
 ```r
-return(
-  list(
-        bestVal,
-        value,
-        ... # other values which your algorithm returns
-        )
-)
+return(list(bestVal, value, ...))
 ```
 
-## Benchmark
+## Workflow
 
-### Configuration
+Usage of package `{cecb}` is pretty simple. 
+To run benchmark one has to provide YAML config file and use a proper function from the package. 
+When benchmark is done and data is saved one could plot ECDF curves. Workflow in pseudo-R looks like one below:
 
-The benchmark is configured by YAML with structure written below:
+```r
+benchmark:
+	yaml-config.yml %>%
+	cecb::run_benchmark() 
+ECDF plots:
+	data = 
+		filepath(s)-to-benchmark-results %>%
+		cecb::get_dfr(config = list(dimension, function_number, repetitions))
+	ecdf_plot = 
+		data %>%
+		cecb::ecdf_plot()
+```
+
+
+### Benchmark configuration
+
+The benchmark is configured by YAML with structure and example data written below:
 
 ```
 methods:
@@ -92,7 +121,10 @@ where:
 * `source` place where your algorithms live
 * `dest` place where results of the benchmark will live 
 
-## ECDF curves
+## References 
 
-TODO
+More information about CEC benchmarks and ECDF curves one can find here: 
 
+[1] "Biobjective Performance Assessment with the COCO Platform", _Dimo Brockhoff, Tea Tusar, Dejan Tusar, Tobias Wagner, Nikolaus Hansen, Anne Auger_
+
+[2] "Benchmark Functions for the CEC’2013 Special Session and Competition on Large-Scale Global Optimization", _Xiaodong Li, Ke Tang_, et al.
