@@ -35,13 +35,13 @@ some_alg = function(par, fn, ..., lower, upper) {
 	...
 }
 ```
-In above signature `par` stands for a initial point, `fn` for a evaluation function and `lower`, `upper` are boundries for hyperrectangle which sets feasibility region.
+In the above signature `par` stands for an initial point, `fn` for an evaluation function, and `lower`, `upper` are boundaries for hyperrectangle which sets the feasibility region.
 
 
 ### Output 
 
-1. it has to return named list with `bestVal` key which contains the best value recorded in each iteration
-2. it has to return named list with `value` key which contains the best value across whole iterations.
+1. it has to return the named list with `bestVal` key which contains the best value recorded in each iteration
+2. it has to return the named list with `value` key which contains the best value across whole iterations.
 
 In other words, your algorithm function should return a named list like below:
 
@@ -51,8 +51,8 @@ return(list(bestVal, value, ...))
 
 ## Workflow
 
-Usage of package `{cecb}` is pretty simple. 
-To run benchmark one has to provide YAML config file and use a proper function from the package. 
+The usage of package `{cecb}` is pretty simple. 
+To run a benchmark one has to provide a YAML config file and use a proper function from the package. 
 When benchmark is done and data is saved one could plot ECDF curves. Workflow in pseudo-R looks like one below:
 
 ```r
@@ -75,31 +75,31 @@ The benchmark is configured by YAML with structure and example data written belo
 
 ```
 methods:
-     1: 
-       algorithm: "cma_es_csa"
-       params:
-         - "sigma"
-         - "lambda"
-       values:
-         - 0.40
-         - 100
-     2: 
-       algorithm: "cma_es_csa"
-       params:
-         - "sigma"
-         - "lambda"
-       values:
-         - 1
-         - 500
+     1: 
+       algorithm: "cma_es_csa"
+       params:
+         - "sigma"
+         - "lambda"
+       values:
+         - 0.40
+         - 100
+     2: 
+       algorithm: "cma_es_csa"
+       params:
+         - "sigma"
+         - "lambda"
+       values:
+         - 1
+         - 500
 ids:
-  - "cma-es-sigma-0.4-pop-100"
-  - "cma-es-sigma-1-pop-500"
+  - "cma-es-sigma-0.4-pop-100"
+  - "cma-es-sigma-1-pop-500"
 probnum:
-  - 1
-  - 2
-  - 3
+  - 1
+  - 2
+  - 3
 dims:
-  - 50
+  - 50
 cec: 13
 repnum: 1
 cpupc: 0.75
@@ -111,11 +111,11 @@ where:
 
 * `methods` stands for optim-methods you are going to test
 * `1`, `2`, `...` are ordinal numbers of tested functions
-* `algorithm` is the name of your method. It has to be identical to filename with source code
+* `algorithm` is the name of your method. It has to be identical to the filename with source code
 * `params` is a list of names of algorithm parameters
 * `values` are values of that parameters 
 * `ids` contains literal IDs of benchmark
-* `probnum` is function number in benchmark's problem set
+* `probnum` is the function number in the benchmark's problem set
 * `dims` contains dimensionality of function
 * `cpupc` is the percent of used CPU cores
 * `source` place where your algorithms live
