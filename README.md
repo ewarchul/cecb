@@ -39,11 +39,12 @@ In the above signature `par` stands for an initial point, `fn` for an evaluation
 
 
 ### Output 
+It has to return the named list with:
 
-1. it has to return the named list with `bestVal` key which contains the best value recorded in each iteration
-2. it has to return the named list with `value` key which contains the best value across whole iterations.
+	1. `bestVal` key which contains the best value recorded in **each** iteration
+	2. `value` key which contains the best value across **whole** iterations.
 
-In other words, your algorithm function should return a named list like below:
+in other words, your algorithm function should return a named list like below:
 
 ```r
 return(list(bestVal, value, ...))
@@ -118,8 +119,8 @@ where:
 * `probnum` is the function number in the benchmark's problem set
 * `dims` contains dimensionality of function
 * `cpupc` is the percent of used CPU cores
-* `source` place where your algorithms live
-* `dest` place where results of the benchmark will live 
+* `source` place where your algorithms live (a filepath)
+* `dest` place where results of the benchmark will live (a filepath) 
 
 :heavy_exclamation_mark: **ID is also your algorithm identifier in data frames and on plots** 
 
