@@ -12,4 +12,5 @@ Directory with data, i.e /benchamrks has data written in two available formats:
 
 ## Config
 
+Directory /yaml contains YAML config file for testing.
 
