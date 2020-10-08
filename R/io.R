@@ -4,7 +4,6 @@
 #' Function saves result of benchmark to JSON file. If given dirpath doesn't exist function creates it.
 #' @param x result vector or matrix
 #' @param dest path to directory
-#' @param filename
 #' @param filename name of json file
 #' @return IO :: ()
 
@@ -41,16 +40,6 @@ save_metadata <- function(dest, filename, info) {
   info %>%
     readr::write_rds(filepath)
 }
-
-
-#' Send SMS
-#'
-#' @description
-#' Function sends SMS with information about status of benchmark.
-#' It reads number and Twilio auth from .twilio-meta file.
-#' @param filepath path to Twilio auth configuration :: String
-#' @param type type of message i.e 'start' or 'end' of benchmark :: String
-#' @param id benchmark id :: String
 
 #' Save plot
 #'

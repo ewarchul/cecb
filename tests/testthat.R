@@ -1,4 +1,4 @@
 library(testthat)
-library(CECBench)
+library(cecb)
 
-test_check("CECBench")
+test_check("cecb")

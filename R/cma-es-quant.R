@@ -1,3 +1,5 @@
+#' Test algorithm 
+#'
 #' @export
 
 cma_es_quant <- function(par, fn, ..., lower, upper, CMA = TRUE, control = list()) {

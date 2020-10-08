@@ -7,9 +7,9 @@
 
 ecdf_plot <- function(.dfx) {
   .dfx %>%
-    ggplot2::ggplot(aes(x = Bstep)) +
-    ggplot2::geom_point(aes(y = Value, shape = Method, color = Method), size = 0.5) +
-    ggplot2::geom_line(aes(y = Value, linetype = Method, color = Method), size = 1.2) +
+    ggplot2::ggplot(ggplot2::aes(x = Bstep)) +
+    ggplot2::geom_point(ggplot2::aes(y = Value, shape = Method, color = Method), size = 0.5) +
+    ggplot2::geom_line(ggplot2::aes(y = Value, linetype = Method, color = Method), size = 1.2) +
     ggplot2::scale_colour_brewer(palette = "Dark2") +
     ggplot2::theme_bw() +
     ggplot2::xlab("log10 of (f-evals / dimension)") +

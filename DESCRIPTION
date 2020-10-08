@@ -8,8 +8,8 @@ Authors@R:
            email = "ewarchul@gmail.com",
            )
 Description: Package contains functions to run benchmark and plot ECDF curve. 
-License: MIT License
-BugReports: https://github.com/warbarbye/CECBench/issues
+License: MIT + file LICENSE
+BugReports: https://github.com/warbarbye/cecb/issues
 Depends:
   R (>= 3.6.2)
 Imports:

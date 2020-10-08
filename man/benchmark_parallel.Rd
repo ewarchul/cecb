@@ -12,8 +12,7 @@ benchmark_parallel(
   .cec = 17,
   .cpupc = 0.75,
   .write_flag = TRUE,
-  .method_id,
-  .dest
+  .method_id
 )
 }
 \arguments{
@@ -30,7 +29,7 @@ benchmark_parallel(
 \item{.cpupc}{CPU usage in pct :: Int}
 }
 \description{
-Function runs benchmark `.cec` on `.method` for given test functions and dimensionality. 
+Function runs benchmark `.cec` on `.method` for given test functions and dimensionality.
 Evalution on each function is repeated `.rep` times. User is able to
 specify usage of CPU cores by `.cpupc` arg.
 }
