@@ -3,7 +3,6 @@
 #' @description
 #' Function parses benchmark configuration file.
 #' @param config config list
-#' @export
 
 parse_config <- function(config) {
   if (is.list(config)) {
@@ -18,7 +17,6 @@ parse_config <- function(config) {
 #' @description
 #' Function parses YAML configuration file.
 #' @param filename name of config file :: String
-#' @export
 
 parse_yaml_config <- function(filename) {
   config <-
