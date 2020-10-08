@@ -114,12 +114,14 @@ where:
 * `algorithm` is the name of your method. It has to be identical to the filename with source code
 * `params` is a list of names of algorithm parameters
 * `values` are values of that parameters 
-* `ids` contains literal IDs of benchmark
+* `ids` contains literal IDs of benchmark 
 * `probnum` is the function number in the benchmark's problem set
 * `dims` contains dimensionality of function
 * `cpupc` is the percent of used CPU cores
 * `source` place where your algorithms live
 * `dest` place where results of the benchmark will live 
+
+:heavy_exclamation_mark: **ID is also your algorithm identifier in data frames and on plots** 
 
 ## References 
 
