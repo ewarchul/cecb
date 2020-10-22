@@ -11,7 +11,8 @@ Description: Package contains functions to run benchmark and plot ECDF curve.
 License: MIT + file LICENSE
 BugReports: https://github.com/warbarbye/cecb/issues
 Depends:
-  R (>= 3.6.2)
+  R (>= 3.6.2),
+  collections (>= 0.3.5)
 Imports:
   parallel,
   furrr (>= 0.1.0),
