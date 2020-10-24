@@ -28,6 +28,15 @@ testthat::test_that("function properly extracts names of algorithms", {
 })
 
 
+testthat::test_that("function is able to distinguish correct and incorrect yaml configs", {
+	parsed_config = 
+		parse_yaml_config(config_path)
+	testthat::expect_true(verify_config_names(parsed_config))
+})
+
+
+
+
 
 	
 
