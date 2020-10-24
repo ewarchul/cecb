@@ -51,11 +51,12 @@ get_dfr <- function(idpaths, config) {
 #' Compute data frame with ECDF
 #'
 #' @description
-#' Function for given `idpaths` and benchmark `config` generates data frame
-#' with ECDF values.
+#' Function for given `idpaths` and benchmark setting generates data frame
+#' with ECDF values using adequate format handler.
 #' @param idpaths list of paths :: [character]
-#' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @param format_handler function to handle specific format file :: integer -> [character] -> integer -> [[numeric]]
+#' @param probnums problem indices :: [numeric]
+#' @param dim dimensionality of function :: numeric
 
 generate_table <- function(idpaths, format_handler, probnums, dim) {
   purrr::map(probnums, format_handler, idpaths, dim)
