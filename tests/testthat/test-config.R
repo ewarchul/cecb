@@ -1,5 +1,5 @@
 config_path = 
-	"./test-config.yml"
+	"../testdata/test-config.yml"
 
 testthat::test_that("function correctly parses yaml file", {
 	parsed_config = 
@@ -22,9 +22,9 @@ testthat::test_that("function correctly parses yaml file", {
 testthat::test_that("function properly extracts names of algorithms", {
 	parsed_config = 
 		parse_yaml_config(config_path)
-	alg_names = 
+	alg_name = 
 		cecb::extract_names(2, parsed_config$methods)
-	testthat::expect_equal(alg_names, c("cma_es_quant", "cma_es_quant"))
+	testthat::expect_equal(alg_names, c("optim_alg", "optim_alg"))
 })
 
 
