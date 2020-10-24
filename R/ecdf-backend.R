@@ -4,37 +4,47 @@
 #' @param filepath :: [character]
 #' @return type of format :: [character]
 
-check_format <- function(filepath) {
-  has_json <-
-    base::list.files(filepath) %>%
-    purrr::detect(stringr::str_detect, "json")
-  if (!is.null(has_json)) {
-    "JSON"
-  } else {
-    "TXT"
-  }
+split_formats <- function(filepaths) {
+  bool_flags = 
+    filepaths %>%
+    purrr::map_lgl(function(fpath) {
+      has_json =
+        base::list.files(fpath) %>%
+        purrr::detect(stringr::str_detect, "json")
+      if(length(has_json)) TRUE else FALSE
+    })
+  list(
+    txt_format = 
+      filepaths[which(!bool_flags)],
+    json_format = 
+      filepaths[which(bool_flags)]
+  )
 }
+
+
 
 #' Benchmark results data frame
 #'
 #' @description Function generates ready to plot data frame with benmchark results.
-#' @param idpath filepath to benchmark data :: [character]
+#' @param idpaths filepath to benchmark data :: [character]
 #' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @return data frame with benchmark data :: tibble
 #' @export
 
-get_dfr <- function(idpath, config) {
+get_dfr <- function(idpaths, config) {
   if (missing(config)) {
     cli::cli_alert_danger("User has to provide map with benchmark configuration. For more details check documentation.")
     base::stop("Missing config.")
   }
-  idpath %>% purrr::map_dfr(function(id) {
-    if (check_format(id) == "JSON") {
-      generate_dfr(id, config, load_result_json)
-    } else {
-      generate_dfr(id, config, load_result_txt)
-    }
-  })
+  c(dim, probnums, rep) %<~% config
+  c(txts, jsons) %<~% split_formats(idpaths)
+  json_table = 
+    generate_table(jsons, load_result_json, probnums, dim)
+  txt_table = 
+    generate_table(txts, load_result_txt, probnums, dim)
+  base::Map(c, json_table, txt_table) %>%
+    compute_ecdf(c(jsons, txts), probnums, rep)
+
 }
 
 
@@ -47,11 +57,8 @@ get_dfr <- function(idpath, config) {
 #' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @param format_handler function to handle specific format file :: integer -> [character] -> integer -> [[numeric]]
 
-generate_dfr <- function(idpaths, config, format_handler) {
-  c(dim, probnums, rep) %<~% config
-  results <-
-    purrr::map(probnums, format_handler, idpaths, dim)
-  compute_ecdf(results, idpaths, probnums, rep)
+generate_table <- function(idpaths, format_handler, probnums, dim) {
+  purrr::map(probnums, format_handler, idpaths, dim)
 }
 
 
