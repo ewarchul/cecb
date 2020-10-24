@@ -28,11 +28,13 @@ get_dfr <- function(idpath, config) {
     cli::cli_alert_danger("User has to provide map with benchmark configuration. For more details check documentation.")
     base::stop("Missing config.")
   }
-  if (check_format(idpath) == "JSON") {
-    generate_dfr(idpath, config, load_result_json)
-  } else {
-    generate_dfr(idpath, config, load_result_txt)
-  }
+  idpath %>% purrr::map_dfr(function(id) {
+    if (check_format(id) == "JSON") {
+      generate_dfr(id, config, load_result_json)
+    } else {
+      generate_dfr(id, config, load_result_txt)
+    }
+  })
 }
 
 

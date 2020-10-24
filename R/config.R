@@ -12,6 +12,27 @@ parse_config <- function(config) {
   }
 }
 
+#' Verify config list
+#' @description
+#' Function checks if given config has only required fields.
+#' @param config named list :: [character]
+#' @return binary flag :: logical
+
+verify_config_names = function(config) {
+  required_fields = 
+    c("methods", "ids", "probnum",
+      "dims", "cec", "repnum",
+      "cpupc", "source", "dest",
+      "save"
+    )
+  diffs =
+    purrr::prepend(
+      dplyr::setdiff(names(config), required_fields),
+      dplyr::setdiff(required_fields, names(config))
+    )
+  if (!length(diffs)) TRUE else FALSE
+}
+
 #' YAML config parser
 #'
 #' @description
@@ -21,6 +42,8 @@ parse_config <- function(config) {
 parse_yaml_config <- function(filename) {
   config <-
     yaml::read_yaml(filename)
+  if (!verify_config_names(config))
+    stop("Given config is incorrect.")
   alg_num <-
     length(config$methods)
   alg_names <-
