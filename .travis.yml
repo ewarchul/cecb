@@ -1,4 +1,5 @@
-language: rwarnings_are_errors: false
+language: r
+rwarnings_are_errors: false
 os: osx
 script:
   - Rscript -e "library(testthat); testthat::test_dir('tests/testthat', reporter = c('progress', 'fail'))"
