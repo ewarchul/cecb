@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ewarchul/cecb.svg?branch=master)](https://travis-ci.com/ewarchul/cecb)
+
 # CEC Benchmark {cecb}
 
 Library provides methods to run CEC20{13, 17} benchmarks and plot ECDF curves.
