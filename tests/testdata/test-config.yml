@@ -12,6 +12,6 @@ dims:
 cec: 13
 repnum: 2
 cpupc: 0.75
-source: "./tests/testdata"
-dest: "./tests/testdata"
+source: "../testdata"
+dest: "../testdata"
 save: 1
