@@ -21,7 +21,21 @@ split_formats <- function(filepaths) {
   )
 }
 
+#' Area under curve
+#' 
+#' @description Function computes area under ECDF curve (AOC)
+#' @param dfx data frame with ECDF values
+#' @param method column name with algorithm(s) label(s) :: character
+#' @param xarg column name of x-axis :: character
+#' @param yarg column name of y-axis :: character
+#' @return data table with `Aoc` column :: tibble
 
+compute_aoc = function(dfx, method = "Method", xarg = "Value", yarg = "Bstep") {
+  dfx %>%
+    dplyr::group_by(!!rlang::sym(method)) %>%
+    dplyr::mutate(Aoc = pracma::trapz(!!rlang::sym(xarg), !!rlang::sym(yarg))) %>%
+    dplyr::slice(dplyr::n())
+}
 
 #' Benchmark results data frame
 #'

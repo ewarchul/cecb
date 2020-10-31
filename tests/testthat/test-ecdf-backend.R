@@ -54,3 +54,36 @@ testthat::test_that("Function is able to deal with different data formats", {
     # Then
     testthat::expect_equal(out, expected)
 })
+
+
+testthat::test_that("Function properly computes area under curve", {
+    # Given
+    func_values = 
+        tibble::tibble(
+            x = 0:10,
+            y = rep(10, 11),
+            name = "constant"
+        ) %>%
+            dplyr::bind_rows(
+                tibble::tibble(
+                    x = 0:10,
+                    y = (0:10)^2,
+                    name = "quadratic"
+            ))
+    expected =
+        tibble::tribble(
+            ~name, ~Aoc,
+            "constant_hand", 100,
+            "quadratic_hand", 333
+        )
+    # When
+    aocs = 
+        func_values %>%
+            compute_aoc("name", "x", "y") %>%
+            dplyr::select(c("name", "Aoc")) 
+    diffs = 
+        dplyr::bind_rows(expected, aocs)
+    # Then
+    testthat::expect_true(all(abs(expected$Aoc - aocs$Aoc) < 5))
+
+})
