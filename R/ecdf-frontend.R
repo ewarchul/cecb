@@ -3,9 +3,11 @@
 #' @description
 #' Function plots ECDF curves.
 #' @param dfx data frame with benchmark results
+#' @param aoc binary flag 
+#' @param ymax height of the table with AOC values
 #' @export
 
-ecdf_plot <- function(dfx, aoc = FALSE) {
+ecdf_plot <- function(dfx, aoc = FALSE, ymax = 0.3) {
   gplot = 
     dfx %>%
       ggplot2::ggplot(ggplot2::aes(x = Bstep)) +
@@ -22,5 +24,14 @@ ecdf_plot <- function(dfx, aoc = FALSE) {
         legend.text = ggplot2::element_text(size = 15, face = "bold"),
         legend.title = ggplot2::element_text(size = 15, face = "bold"),
       )
-  gplot
+  if (aoc) {
+    gplot + 
+      ggplot2::annotation_custom(
+        gridExtra::tableGrob(compute_aoc(dfx)),
+          xmin = 3, ymin = 0,
+          xmax = 4, ymax = ymax
+      )
+  } else {
+    gplot
+  } 
 }

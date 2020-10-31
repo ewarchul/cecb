@@ -30,11 +30,12 @@ split_formats <- function(filepaths) {
 #' @param yarg column name of y-axis :: character
 #' @return data table with `Aoc` column :: tibble
 
-compute_aoc = function(dfx, method = "Method", xarg = "Value", yarg = "Bstep") {
+compute_aoc = function(dfx, method = "Method", xarg = "Bstep", yarg = "Value") {
   dfx %>%
     dplyr::group_by(!!rlang::sym(method)) %>%
     dplyr::mutate(Aoc = pracma::trapz(!!rlang::sym(xarg), !!rlang::sym(yarg))) %>%
-    dplyr::slice(dplyr::n())
+    dplyr::slice(dplyr::n()) %>%
+    dplyr::select(!!rlang::sym(method), Aoc)
 }
 
 #' Benchmark results data frame

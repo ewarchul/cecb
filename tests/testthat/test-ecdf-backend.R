@@ -79,8 +79,7 @@ testthat::test_that("Function properly computes area under curve", {
     # When
     aocs = 
         func_values %>%
-            compute_aoc("name", "x", "y") %>%
-            dplyr::select(c("name", "Aoc")) 
+            compute_aoc("name", "x", "y") 
     diffs = 
         dplyr::bind_rows(expected, aocs)
     # Then

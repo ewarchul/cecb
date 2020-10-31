@@ -2,7 +2,6 @@
 
 export("%>%")
 export("%T>%")
-export(cma_es_quant)
 export(ecdf_plot)
 export(get_dfr)
 export(run_benchmark)

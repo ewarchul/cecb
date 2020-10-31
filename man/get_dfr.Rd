@@ -4,10 +4,10 @@
 \alias{get_dfr}
 \title{Benchmark results data frame}
 \usage{
-get_dfr(idpath, config)
+get_dfr(idpaths, config)
 }
 \arguments{
-\item{idpath}{filepath to benchmark data :: [character]}
+\item{idpaths}{filepath to benchmark data :: [character]}
 
 \item{config}{map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]}
 }

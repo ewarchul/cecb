@@ -4,10 +4,14 @@
 \alias{ecdf_plot}
 \title{ECDF plot}
 \usage{
-ecdf_plot(.dfx)
+ecdf_plot(dfx, aoc = FALSE, ymax = 0.3)
 }
 \arguments{
-\item{.dfx}{data frame with benchmark results}
+\item{dfx}{data frame with benchmark results}
+
+\item{aoc}{binary flag}
+
+\item{ymax}{height of the table with AOC values}
 }
 \description{
 Function plots ECDF curves.
