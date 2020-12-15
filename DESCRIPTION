@@ -15,6 +15,7 @@ Depends:
   collections (>= 0.3.5)
 Imports:
   parallel,
+  progress (>= 1.2.2),
   furrr (>= 0.1.0),
   future (>= 1.16.0),
   cli (>= 2.0.2),
