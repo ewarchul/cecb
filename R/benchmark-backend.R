@@ -20,7 +20,6 @@ benchmark_parallel <- function(.method,
                                .cpupc = .75,
                                .write_flag = TRUE,
                                .method_id) {
-  cli::cli_alert("(problem, dimension, repetition)\n")
   bench_start <- Sys.time()
   if (.cec == 17) {
     scores <- seq(100, 3000, by = 100)
@@ -34,8 +33,7 @@ benchmark_parallel <- function(.method,
   benchmark_state <-
     collections::dict()
   problem_state <-
-    collections::dict()
-
+    collections::dict() 
   for (d in .dims) {
     results <- foreach::foreach(
       n = .probnum,
@@ -45,16 +43,16 @@ benchmark_parallel <- function(.method,
       resultVector <- c()
       resets <- c()
       informMatrix <- matrix(0, nrow = 14, ncol = .rep)
-      iteration_state <- collections::dict()
+      iteration_state <- collections::dict() 
       prog_bar = 
         progress::progress_bar$new(
-          format = "Method :alg | Dim. :dim | Prob. No. :prob [:bar] :current/:total (:percent)",
+          format = "Run :: :alg  (D = :dim, F = :prob) [:bar] :current/:total (:percent)\n",
           total = .rep
         )
       prog_bar$tick(0)
       for (i in 1:.rep) {
         time_start <- Sys.time()
-        prog_bar$tick(1, tokens = list(
+        prog_bar$tick(1,tokens = list(
           alg = .method_id,
           prob = n,
           dim = d
