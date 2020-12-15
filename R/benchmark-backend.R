@@ -48,13 +48,17 @@ benchmark_parallel <- function(.method,
       iteration_state <- collections::dict()
       prog_bar = 
         progress::progress_bar$new(
-          format = "[:bar] :current/:total (:percent)",
+          format = "Method :alg | Dim. :dim | Prob. No. :prob [:bar] :current/:total (:percent)",
           total = .rep
         )
-      cli::cli_alert_info("Method: {.method_id} | Problem: {n} | Dimension: {d})\n")
+      prog_bar$tick(0)
       for (i in 1:.rep) {
         time_start <- Sys.time()
-        prog_bar$tick()
+        prog_bar$tick(1, tokens = list(
+          alg = .method_id,
+          prob = n,
+          dim = d
+        ))
         result <- tryCatch(
           {
             .method(
@@ -82,8 +86,6 @@ benchmark_parallel <- function(.method,
           informMatrix[bb, i] <- abs(result$diagnostic$bestVal[recordedTimes[bb] * ceiling(nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
         time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        cli::cli_alert_success("Done {.method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
-
         iteration_state$set(i, informMatrix[, i])
       }
       problem_state$set(n, iteration_state$as_list())$as_list()
