@@ -2,6 +2,8 @@
 
 export("%>%")
 export("%T>%")
+export(cec_class_grid)
+export(cec_problem_grid)
 export(ecdf_plot)
 export(get_dfr)
 export(run_benchmark)
