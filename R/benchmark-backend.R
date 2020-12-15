@@ -46,11 +46,17 @@ benchmark_parallel <- function(.method,
       resets <- c()
       informMatrix <- matrix(0, nrow = 14, ncol = .rep)
       iteration_state <- collections::dict()
+      prog_bar = 
+        progress::progress_bar$new(
+          format = "[:bar] :current/:total (:percent)",
+          total = .rep
+        )
+      cli::cli_alert_info("Method: {.method_id} | Problem: {n} | Dimension: {d})\n")
       for (i in 1:.rep) {
         time_start <- Sys.time()
+        prog_bar$tick()
         result <- tryCatch(
           {
-            cli::cli_alert_info("Start {.method_id}: ({n}, {d}, {i})\n")
             .method(
               rep(0, d),
               fn = function(x) {
