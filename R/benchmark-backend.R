@@ -12,61 +12,46 @@
 #' @param .cpupc CPU usage in pct :: Int
 #' @importFrom foreach "%dopar%"
 
-benchmark_parallel <- function(.method,
-                               .probnum,
-                               .dims,
-                               .rep,
-                               .cec = 17,
-                               .cpupc = .75,
-                               .write_flag = TRUE,
-                               .method_id) {
+benchmark_parallel <- function(method,
+                               probnum,
+                               dims,
+                               rep,
+                               suite = NA,
+                               cec = 17,
+                               cpupc = .75,
+                               write_flag = TRUE,
+                               method_id) {
   bench_start <- Sys.time()
-  if (.cec == 17) {
-    scores <- seq(100, 3000, by = 100)
-  } else {
-    scores <- c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
-  }
-  no_cores <-
-    floor(.cpupc * parallel::detectCores())
+  c(scores, eval_func) %<~%
+    get_benchmark_setup(cec)
+  no_cores <- floor(cpupc * parallel::detectCores())
+  benchmark_state <- collections::dict()
+  problem_state <-collections::dict() 
   doParallel::registerDoParallel(no_cores)
-
-  benchmark_state <-
-    collections::dict()
-  problem_state <-
-    collections::dict() 
-  for (d in .dims) {
+  for (d in dims) {
     results <- foreach::foreach(
-      n = .probnum,
+      n = probnum,
       .combine = c,
-      .export = c("scores", "d", ".cec", "problem_state")
+      .export = c("scores", "budget_steps", "d", "cec", "problem_state")
     ) %dopar% {
-      resultVector <- c()
-      resets <- c()
-      informMatrix <- matrix(0, nrow = 14, ncol = .rep)
+      budget_steps = get_budget_step(cec, suite, d)
+      error_table <- matrix(0, nrow = 16, ncol = rep)
       iteration_state <- collections::dict() 
       prog_bar = 
         progress::progress_bar$new(
           format = "Run :: :alg  (D = :dim, F = :prob) [:bar] :current/:total (:percent)\n",
-          total = .rep
+          total = rep
         )
       prog_bar$tick(0)
-      for (i in 1:.rep) {
+      for (i in 1:rep) {
         time_start <- Sys.time()
-        prog_bar$tick(1,tokens = list(
-          alg = .method_id,
-          prob = n,
-          dim = d
-        ))
+        prog_bar$tick(1,tokens = list(alg = method_id, prob = n, dim = d))
         result <- tryCatch(
           {
-            .method(
-              rep(0, d),
+            method(
+              runif(d, -100, 100),
               fn = function(x) {
-                if (.cec == 17) {
-                  cec2017::cec2017(n, x)
-                } else {
-                  cec2013::cec2013(n, x) + 1500
-                }
+                ifelse(cec == 21, eval_func(n, x, suite), eval_func(n, x))
               },
               lower = -100,
               upper = 100
@@ -77,14 +62,12 @@ benchmark_parallel <- function(.method,
               print(paste("Dim:", d, " Problem:", n, " ", cond))
             }
         )
-        resultVector <- c(resultVector, abs(result$value - scores[n]))
-        resets <- c(resets, result$resets)
-        recordedTimes <- c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-        for (bb in 1:length(recordedTimes)) {
-          informMatrix[bb, i] <- abs(result$diagnostic$bestVal[recordedTimes[bb] * ceiling(nrow(result$diagnostic$bestVal)), ] - scores[n])
+        for (bb in 1:length(budget_steps)) {
+          step = budget_steps[bb] * ceiling(nrow(result$diagnostic$bestVal)) 
+          error_table[bb, i] <- abs(result$diagnostic$bestVal[step,] - scores[n])
         }
         time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        iteration_state$set(i, informMatrix[, i])
+        iteration_state$set(i, error_table[, i])
       }
       problem_state$set(n, iteration_state$as_list())$as_list()
     }

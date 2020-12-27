@@ -90,7 +90,7 @@ generate_table <- function(idpaths, format_handler, probnums, dim) {
 
 compute_ecdf <- function(benchmark_data, idpath, probnums, rep) {
   bsteps <-
-    c(0.01, 0.02, 0.03, 0.05, seq(0.1, 1.0, 0.1)) * log10(10000)
+    get_budget_step(14, dim = 10) * log10(10000)
   ecdf_vals <- purrr::map(benchmark_data, get_ecdf)
   ecdf_ms <- get_ms(ecdf_vals, rep)
   get_mincnt(
@@ -168,7 +168,7 @@ load_result_json <- function(probnum, idpaths, dim) {
         stringr::str_glue("{id}/{bench_id}.json")
       jsonlite::read_json(path = filepath) %>%
         parse_json(probnum, dim) %>%
-        matrix(nrow = 14) %>%
+        matrix(nrow = 16) %>%
         data.frame()
     }) %>%
     purrr::set_names(extract_id(idpaths))

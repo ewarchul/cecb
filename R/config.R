@@ -23,7 +23,7 @@ verify_config_names = function(config) {
     c("methods", "ids", "probnum",
       "dims", "cec", "repnum",
       "cpupc", "source", "dest",
-      "save"
+      "save", "suite"
     )
   diffs =
     purrr::prepend(
