@@ -13,7 +13,7 @@ run_benchmark <- function(config) {
     id = parsed_config$ids
   ) %>%
     purrr::pmap(function(method, id) {
-      c(bench_data, time) %<~%
+      bench_data =
         benchmark_parallel(
           method = method,
           probnum = parsed_config$probnum,
@@ -37,13 +37,11 @@ run_benchmark <- function(config) {
         info =
           list(
             method = method,
-            time = time,
             id = id
           )
       )
       list(
         data = bench_data,
-        time = time,
         id = id
       )
     })
