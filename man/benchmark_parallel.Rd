@@ -5,14 +5,15 @@
 \title{Run benchmark parallely}
 \usage{
 benchmark_parallel(
-  .method,
-  .probnum,
-  .dims,
-  .rep,
-  .cec = 17,
-  .cpupc = 0.75,
-  .write_flag = TRUE,
-  .method_id
+  method,
+  probnum,
+  dims,
+  rep,
+  suite = NA,
+  cec = 17,
+  cpupc = 0.75,
+  write_flag = TRUE,
+  method_id
 )
 }
 \arguments{
