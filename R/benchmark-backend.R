@@ -12,30 +12,28 @@
 #' @param .cpupc CPU usage in pct :: Int
 #' @importFrom foreach "%dopar%"
 
-benchmark_parallel <- function(method,
-                               probnum,
-                               dims,
-                               rep,
-                               suite = NA,
-                               cec = 17,
-                               cpupc = .75,
-                               write_flag = TRUE,
-                               method_id) {
-  bench_start <- Sys.time()
-  c(scores, eval_func) %<~%
-    get_benchmark_setup(cec)
+benchmark_parallel <- function(
+  method,
+  probnum,
+  dims,
+  rep,
+  cec,
+  suite = "basic",
+  cpupc = .75,
+  write_flag = TRUE,
+  benchmark_id
+) {
   no_cores <- floor(cpupc * parallel::detectCores())
   benchmark_state <- collections::dict()
-  problem_state <-collections::dict() 
+  problem_state <- collections::dict() 
   doParallel::registerDoParallel(no_cores)
+  eval_func = get_eval_func(cec, suite)
   for (d in dims) {
     results <- foreach::foreach(
       n = probnum,
       .combine = c,
-      .export = c("scores", "budget_steps", "d", "cec", "problem_state")
+      .export = c("d", "problem_state")
     ) %dopar% {
-      budget_steps = get_budget_step(cec, suite, d)
-      error_table <- matrix(0, nrow = 16, ncol = rep)
       iteration_state <- collections::dict() 
       prog_bar = 
         progress::progress_bar$new(
@@ -44,15 +42,12 @@ benchmark_parallel <- function(method,
         )
       prog_bar$tick(0)
       for (i in 1:rep) {
-        time_start <- Sys.time()
-        prog_bar$tick(1,tokens = list(alg = method_id, prob = n, dim = d))
+        prog_bar$tick(1, tokens = list(alg = benchmark_id, prob = n, dim = d))
         result <- tryCatch(
           {
             method(
               runif(d, -100, 100),
-              fn = function(x) {
-                ifelse(cec == 21, eval_func(n, x, suite), eval_func(n, x))
-              },
+              fn = function(x) { eval_func(n, x) },
               lower = -100,
               upper = 100
             )
@@ -62,12 +57,7 @@ benchmark_parallel <- function(method,
               print(paste("Dim:", d, " Problem:", n, " ", cond))
             }
         )
-        for (bb in 1:length(budget_steps)) {
-          step = budget_steps[bb] * ceiling(nrow(result$diagnostic$bestVal)) 
-          error_table[bb, i] <- abs(result$diagnostic$bestVal[step,] - scores[n])
-        }
-        time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        iteration_state$set(i, error_table[, i])
+        iteration_state$set(i, result$diagnostic$bestVal)
       }
       problem_state$set(n, iteration_state$as_list())$as_list()
     }
@@ -76,6 +66,21 @@ benchmark_parallel <- function(method,
   doParallel::stopImplicitCluster()
   list(
     data_comp = benchmark_state$as_list(),
-    time = round(as.numeric(Sys.time() - bench_start, unit = "mins"), 2)
+    benchmark_id = benchmark_id
   )
+}
+
+get_eval_func = function(cec, suite) {
+  if (cec == 13) {
+    function(n, x) { cecs::cec2013(n, x) + 1500 }
+  }
+  else if (cec == 14) {
+    function(n, x) { cecs::cec2014(n, x) }
+  }
+  else if (cec == 17) {
+    function(n, x) { cecs::cec2017(n, x) }
+  }
+  else if (cec == 21) {
+    function(n, x) { cecs::cec2021(n, x, suite) }
+  }
 }
