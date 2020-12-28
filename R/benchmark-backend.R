@@ -21,7 +21,7 @@ benchmark_parallel <- function(
   suite = "basic",
   cpupc = .75,
   write_flag = TRUE,
-  method_id
+  benchmark_id
 ) {
   no_cores <- floor(cpupc * parallel::detectCores())
   benchmark_state <- collections::dict()
@@ -42,7 +42,7 @@ benchmark_parallel <- function(
         )
       prog_bar$tick(0)
       for (i in 1:rep) {
-        prog_bar$tick(1, tokens = list(alg = method_id, prob = n, dim = d))
+        prog_bar$tick(1, tokens = list(alg = benchmark_id, prob = n, dim = d))
         result <- tryCatch(
           {
             method(
@@ -65,7 +65,8 @@ benchmark_parallel <- function(
   }
   doParallel::stopImplicitCluster()
   list(
-    data_comp = benchmark_state$as_list()
+    data_comp = benchmark_state$as_list(),
+    benchmark_id = benchmark_id
   )
 }
 

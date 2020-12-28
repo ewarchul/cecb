@@ -53,7 +53,7 @@ parse_yaml_config <- function(filename) {
     purrr::walk(function(method) {
       source(paste0(config$source, "/", stringr::str_replace_all(method, "_", "-"), ".R"))
     })
-
+  config$names <- alg_names
   config$methods_sym <-
     extract_algorithm(alg_num, config$methods)
   config

@@ -1,9 +1,27 @@
+save_tables = function(df, dirpath) {
+  df %>%
+    dplyr::group_by(Dim, Func, Benchmark) %>%
+    dplyr::group_walk(function(data, info) {
+      datapath = dirpath %++%
+        "/" %++%
+        info$Benchmark %++%
+        "/M"
+      dir.create(datapath, showWarnings = FALSE)
+      data %>% readr::write_csv(
+       file = 
+         datapath %++% "/" %++%
+         "M_" %++% 
+         info$Func %++% "_" %++% info$Dim %++% ".csv"
+      )
+    })
+}
 
 generate_error_table = function(input, dims, probs, reps, cec) {
+  bench_id = input %>% purrr::pluck("benchmark_id")
   expand.grid(
     d = dims,
     p = probs
-  ) %>% 
+  ) %>%
   purrr::pmap(function(d, p) {
     steps = get_budgetSteps(cec, d)
     scores = get_scores(cec)
@@ -15,12 +33,20 @@ generate_error_table = function(input, dims, probs, reps, cec) {
           as.character(p),
           as.character(r)
       ) %>% 
-      unlist() %>% matrix()
+      unlist() %>%
+      matrix()
     dfx = tibble::tibble(
-      !!rlang::sym(paste0("REP_", r)) := df[steps * nrow(df),] - scores[p]
+      !!rlang::sym(paste0("R", r)) := df[steps * nrow(df),] - scores[p]
     ) %>% padding_df(length(steps))
-    }) %>% purrr::reduce(dplyr::bind_cols) %>% dplyr::mutate(Dim = d, Func = p)
-  }) %>% purrr::reduce(dplyr::bind_rows)
+    }) %>%
+    purrr::reduce(dplyr::bind_cols) %>%
+    dplyr::mutate(
+      Dim = d,
+      Func = p,
+      Benchmark = bench_id
+    )
+  }) %>%
+  purrr::reduce(dplyr::bind_rows)
 }
 
 
