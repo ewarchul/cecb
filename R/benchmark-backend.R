@@ -37,7 +37,7 @@ benchmark_parallel = function(method, probnum, dims,
           {
             cli::cli_alert_info("Start {method_id}: ({n}, {d}, {i})\n")
             method(
-              rep(0, d),
+              runif(d, -100, 100),
               fn = function(x) {
                 eval_func(n, x)
               },
