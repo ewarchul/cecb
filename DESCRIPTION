@@ -1,4 +1,4 @@
-Package: CECBench
+Package: cecb
 Title: CEC benchmark  
 Version: 0.0.0.9000
 Authors@R: 
@@ -9,18 +9,16 @@ Authors@R:
            )
 Description: Package contains functions to run benchmark and plot ECDF curve. 
 License: MIT License
-BugReports: https://github.com/warbarbye/CECBench/issues
+BugReports: https://github.com/warbarbye/cecb/issues
 Depends:
   R (>= 3.6.2)
 Imports:
   parallel,
   furrr (>= 0.1.0),
   future (>= 1.16.0),
-  twilio (>= 0.1.0),
   cli (>= 2.0.2),
+  cecs (>= 0.1.0),
   yaml (>= 2.2.1),
-  cec2013 (>= 0.1.5),
-  cec2017 (>= 0.2.0),
   stringr (>= 1.4.0),
   dplyr (>= 0.8.4),
   purrr (>= 0.3.3),
@@ -32,9 +30,10 @@ Imports:
   tidyr (>= 1.0.2),
   foreach (>= 1.4.8),
   doParallel (>= 1.0.15),
-  iterators (>= 1.0.12)
+  iterators (>= 1.0.12),
+  zeallot (>= 0.1.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Suggests: 
     testthat

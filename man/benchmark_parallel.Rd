@@ -5,30 +5,30 @@
 \title{Run benchmark parallely}
 \usage{
 benchmark_parallel(
-  .method,
-  .probnum,
-  .dims,
-  .rep,
-  .cec = 17,
-  .cpupc = 0.75,
-  .write_flag = TRUE,
-  .method_id,
-  .dest,
-  .twilio
+  method,
+  probnum,
+  dims,
+  rep,
+  cec = 17,
+  suite = "basic",
+  cpupc = 0.75,
+  write_flag = TRUE,
+  method_id,
+  dest
 )
 }
 \arguments{
-\item{.method}{optimization algorithm :: function}
+\item{method}{optimization algorithm :: function}
 
-\item{.probnum}{indices of problem function :: [Int]}
+\item{probnum}{indices of problem function :: [Int]}
 
-\item{.dims}{dimensionalities :: [Int]}
+\item{dims}{dimensionalities :: [Int]}
 
-\item{.rep}{amount of repetition :: Int}
+\item{rep}{amount of repetition :: Int}
 
-\item{.cec}{year of benchmark :: Int}
+\item{cec}{year of benchmark :: Int}
 
-\item{.cpupc}{CPU usage in pct :: Int}
+\item{cpupc}{CPU usage in pct :: Int}
 }
 \description{
 Function runs benchmark `.cec` on `.method` for given test functions and dimensionality. 

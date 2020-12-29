@@ -4,54 +4,42 @@
 #' Function runs benchmark `.cec` on `.method` for given test functions and dimensionality. 
 #' Evalution on each function is repeated `.rep` times. User is able to
 #' specify usage of CPU cores by `.cpupc` arg.
-#' @param .method optimization algorithm :: function
-#' @param .probnum indices of problem function :: [Int]
-#' @param .dims dimensionalities :: [Int]
-#' @param .rep amount of repetition :: Int
-#' @param .cec year of benchmark :: Int
-#' @param .cpupc CPU usage in pct :: Int
-#' @export
+#' @param method optimization algorithm :: function
+#' @param probnum indices of problem function :: [Int]
+#' @param dims dimensionalities :: [Int]
+#' @param rep amount of repetition :: Int
+#' @param cec year of benchmark :: Int
+#' @param cpupc CPU usage in pct :: Int
 #' @importFrom foreach "%dopar%"
 
-benchmark_parallel = function(.method, .probnum, .dims,
-                              .rep, .cec = 17, .cpupc = .75,
-                              .write_flag = TRUE, .method_id,
-                              .dest, .twilio) {
-  suppressMessages(library(foreach))
-  suppressMessages(library(doParallel))
+benchmark_parallel = function(method, probnum, dims,
+                              rep, cec = 17, suite = "basic", cpupc = .75,
+                              write_flag = TRUE, method_id,
+                              dest) {
   cli::cli_alert("(problem, dimension, repetition)\n")
-  if (.cec == 17) {
-    scores = seq(100, 3000, by = 100)
-  } else {
-    scores = c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
-  }
-
-  no_cores =
-    floor(.cpupc * parallel::detectCores())
+  scores = get_scores(cec, suite)
+  eval_func = get_eval_func(cec, suite)
+  no_cores = floor(cpupc * parallel::detectCores())
   doParallel::registerDoParallel(no_cores)
-
-  for (d in .dims) {
+  for (d in dims) {
     results <- foreach::foreach(
-      n = .probnum,
+      n = probnum,
       .combine = c,
-      .export = c("scores", "d", ".cec")
+      .export = c("scores", "d", "cec")
     ) %dopar% {
       resultVector <- c()
       resets <- c()
-      informMatrix <- matrix(0, nrow = 14, ncol = .rep)
-      for (i in 1:.rep) {
+      error_table_old <- matrix(0, nrow = 14, ncol = rep)
+      error_table_new <- matrix(0, nrow = 16, ncol = rep)
+      for (i in 1:rep) {
         time_start = Sys.time()
         result <- tryCatch(
           {
-            cli::cli_alert_info("Start {.method_id}: ({n}, {d}, {i})\n")
-            .method(
+            cli::cli_alert_info("Start {method_id}: ({n}, {d}, {i})\n")
+            method(
               rep(0, d),
               fn = function(x) {
-                if (.cec == 17) {
-                  cec2017::cec2017(n, x)
-                } else {
-                  cec2013::cec2013(n, x) + 1500
-                }
+                eval_func(n, x)
               },
               lower = -100,
               upper = 100
@@ -64,150 +52,58 @@ benchmark_parallel = function(.method, .probnum, .dims,
         )
         resultVector <- c(resultVector, abs(result$value - scores[n]))
         resets <- c(resets, result$resets)
-        recordedTimes <- c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-        for (bb in 1:length(recordedTimes)) {
-          informMatrix[bb, i] <- abs(result$diagnostic$bestVal[recordedTimes[bb] * ceiling(nrow(result$diagnostic$bestVal)), ] - scores[n])
+        recordedTimes_old = c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+        recordedTimes_new = get_recordedTimes(d)
+        for (bb in 1:length(recordedTimes_old)) {
+          error_table_old[bb, i] <- abs(result$diagnostic$bestVal[ceiling(recordedTimes_old[bb] * nrow(result$diagnostic$bestVal)), ] - scores[n])
+        }
+        for (bb in 1:length(recordedTimes_new)) {
+          error_table_new[bb, i] <- abs(result$diagnostic$bestVal[ceiling(recordedTimes_new[bb] * nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
         time_end = round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        cli::cli_alert_success("Done {.method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
-
+        cli::cli_alert_success("Done {method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
       } 
-      print_stats(resultVector)
-      if (.write_flag) {
-        save_results(resultVector, .cec, .method_id, n, d, "N", .dest)
-        save_results(informMatrix, .cec, .method_id, n, d, "M", .dest)
+      if (write_flag) {
+        save_results(resultVector, cec, method_id, n, d, "N", dest)
+        save_results(error_table_old, cec, method_id, n, d, "M", dest)
+        save_results(error_table_new, cec, method_id, n, d, "m", dest)
       }
     }
   }
   doParallel::stopImplicitCluster()
 }
 
-#' YAML config parser
-#'
-#' @description 
-#' Function parses YAML configuration file. 
-#' @param filename name of config file :: String
-#' @export
-
-parse_yaml_config = function(filename) {
-  config = 
-    yaml::read_yaml(filename)
-  alg_num = 
-    length(config$methods)
-  alg_names = 
-    extract_names(alg_num, config$methods)
-
-  alg_names %>%
-    purrr::walk(function(method) {
-      source(paste0(config$source, "/", stringr::str_replace_all(method, "_", "-"), ".R"))
-    })
-
-  config$methods_sym = 
-    extract_algorithm(alg_num, config$methods)
-  config
+get_eval_func = function(cec, suite) {
+  if (cec == 13) {
+    function(n, x) { cecs::cec2013(n, x) + 1500 }
+  }
+  else if (cec == 14) {
+    function(n, x) { cecs::cec2014(n, x) }
+  }
+  else if (cec == 17) {
+    function(n, x) { cecs::cec2017(n, x) }
+  }
+  else if (cec == 21) {
+    function(n, x) { cecs::cec2021(n, x, suite) }
+  }
 }
 
-#' @export
-
-extract_names = function(amount, algs) {
-  1:amount %>%
-    purrr::map_chr(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      alg$algorithm
-    })
+get_recordedTimes = function(dim) {
+    dim^(((0:15) / 5) - 3)
 }
 
-#' @export
-
-extract_algorithm = function(amount, algs) {
-  1:amount %>%
-    purrr::map(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      base_func = 
-        base::get(alg$algorithm)
-      param_set = 
-        setNames(as.list(alg$values), alg$params)
-      purrr::partial(base_func, control = param_set)
-    })
-}
-
-#' Config parser
-#'
-#' @description 
-#' Function parses benchmark configuration file.
-#' @param config config list
-#' @export
-
-parse_config = function(config) {
-  if (is.list(config))
-    config
-  else
-    parse_yaml_config(config)
-}
-
-#' Benchmark results basic stats
-#'
-#' @description
-#' Function prints on STDIN basic statistics of benchmark result vector.
-#' @param vec vector with results
-#' @export
-
-print_stats = function(vec) {
-  cat(stringr::str_interp(
-"Statistics:
-  Median: ${median(vec)}
-  Mean: ${mean(vec)}
-  Max: ${max(vec)}
-  Min: ${min(vec)}
-  Std: ${sd(vec)}\n"
-      )
-  )
-}
-
-#' Save benchmark results
-#' 
-#' @description
-#' Function saves result of benchmark to text file.
-#' @param x result vector or matrix
-#' @param cec CEC version :: Int
-#' @param id benchmark id :: String
-#' @param prob problem number :: Int
-#' @param dim dimension of given problem :: Int
-#' @param label label of algorithm :: String
-#' @param type result type :: String
-#' @export
-
-save_results = function(x, cec, id, prob, dim, type, dest) {
-  dirpath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
-  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}.txt")
-  if (!dir.exists(dirpath))
-    dir.create(dirpath, recursive = TRUE)
-  write.table(x, file = filepath, sep = ",", col.names = FALSE, row.names = FALSE)
-}
-
-#' Send SMS
-#'
-#' @description 
-#' Function sends SMS with information about status of benchmark.
-#' It reads number and Twilio auth from .twilio-meta file.
-#' @param filepath path to Twilio auth configuration :: String
-#' @param type type of message i.e 'start' or 'end' of benchmark :: String
-#' @param id benchmark id :: String
-
-send_sms = function(filepath, type, id) {
-  if (type == "start")
-    body = stringr::str_glue("Benchmark {id} start")
-  else
-    body = stringr::str_glue("Benchmark {id} end")
-  config =
-    yaml::read_yaml(filepath)
-  Sys.setenv(TWILIO_SID = config$sid)
-  Sys.setenv(TWILIO_TOKEN = config$token)
-  twilio::tw_send_message(
-    to = config$to_number,
-    from = config$from_number,
-    body = body 
-    )
+get_scores = function(cec, suite) {
+  if (cec == 13) {
+     c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
+  }
+  else if (cec %in% c(14, 17)) {
+    seq(100, 3000, by = 100)
+  }
+  else if (cec == 21) {
+    if (suite %in% c("basic", "shift", "rot", "shift_rot")) {
+      rep(0, 10)
+    } else {
+      c(100, 1100, 700, 1900, 1700, 1600, 2100, 2200, 2400, 2500)
+    }
+  }
 }
