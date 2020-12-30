@@ -43,28 +43,7 @@ verify_config_names = function(config) {
   if (!length(diffs)) TRUE else FALSE
 }
 
-extract_names = function(amount, algs) {
-  1:amount %>%
-    purrr::map_chr(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      alg$algorithm
-    })
-}
 
-
-extract_algorithm = function(amount, algs) {
-  1:amount %>%
-    purrr::map(function(num) {
-      alg =
-        algs %>% purrr::pluck(num)
-      base_func = 
-        base::get(alg$algorithm)
-      param_set = 
-        setNames(as.list(alg$values), alg$params)
-      purrr::partial(base_func, control = param_set)
-    })
-}
 
 #' Config parser
 #'

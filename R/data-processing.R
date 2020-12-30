@@ -1,22 +1,3 @@
-#' Extract method name
-#'
-#' @description 
-#' Function uses regex to extract method name from benchmark ID.
-#' @param id benchmark ID
-
-extract_method = function(id) {
-    id %>%
-    stringr::str_extract_all("\\b[a-z]+\\b") %>%
-    unlist() %>%
-    stringr::str_c(collapse = "-")
-}
-
-
-extract_id <- function(idpaths) {
-  idpaths %>%
-    purrr::map(stringr::str_extract, "([^/]+$)")
-}
-
 #' Benchmark results data frame
 #'
 #' @description Function generates ready to plot data frame with benmchark results.
@@ -36,7 +17,34 @@ get_dfr <- function(idpaths, config) {
     compute_ecdf(idpaths, probnums, rep)
 }
 
+#' Compute data frame with ECDF
+#'
+#' @description
+#' Function for given `idpaths` and benchmark setting generates data frame
+#' with ECDF values using adequate format handler.
+#' @param idpaths list of paths :: [character]
+#' @param format_handler function to handle specific format file :: integer -> [character] -> integer -> [[numeric]]
+#' @param probnums problem indices :: [numeric]
+#' @param dim dimensionality of function :: numeric
+
 generate_table <- function(idpaths, format_handler, probnums, dim) {
   purrr::map(probnums, format_handler, idpaths, dim)
 }
 
+
+#' Area under curve
+#' 
+#' @description Function computes area under ECDF curve (AOC)
+#' @param dfx data frame with ECDF values
+#' @param method column name with algorithm(s) label(s) :: character
+#' @param xarg column name of x-axis :: character
+#' @param yarg column name of y-axis :: character
+#' @return data table with `Aoc` column :: tibble
+
+compute_aoc = function(dfx, method = "Method", xarg = "Bstep", yarg = "Value") {
+  dfx %>%
+    dplyr::group_by(!!rlang::sym(method)) %>%
+    dplyr::mutate(Aoc = pracma::trapz(!!rlang::sym(xarg), !!rlang::sym(yarg))) %>%
+    dplyr::slice(dplyr::n()) %>%
+    dplyr::select(!!rlang::sym(method), Aoc)
+}

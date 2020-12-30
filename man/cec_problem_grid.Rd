@@ -4,7 +4,14 @@
 \alias{cec_problem_grid}
 \title{ECDF per problem}
 \usage{
-cec_problem_grid(filepaths, problems, dim, cec = 17, rep = 51)
+cec_problem_grid(filepaths, cec, config)
+}
+\arguments{
+\item{filepaths}{filepaths to dirs with benchmark results :: [String]}
+
+\item{cec}{version of CEC :: Int}
+
+\item{config}{map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]}
 }
 \description{
 ECDF per problem

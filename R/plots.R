@@ -2,11 +2,11 @@
 #' 
 #' @description
 #' Function plots ECDF curves.
-#' @param .dfx data frame with benchmark results
+#' @param dfx data frame with benchmark results
 #' @export
 
-ecdf_plot = function(.dfx) {
-  .dfx %>%
+ecdf_plot = function(dfx) {
+  dfx %>%
     ggplot2::ggplot(ggplot2::aes(x = Bstep)) +
     ggplot2::geom_point(ggplot2::aes(y = Value, shape = Method, color = Method), size = 0.5) +
     ggplot2::geom_line(ggplot2::aes(y = Value, linetype = Method, color = Method), size = 1.2) +
@@ -26,6 +26,10 @@ ecdf_plot = function(.dfx) {
 
 #' ECDF in function classes
 #'
+#' @param filepaths filepaths to dirs with benchmark results :: [String]
+#' @param dim dimensionality :: String
+#' @param cec version of CEC :: Int
+#' @param rep number of repetitions :: Int
 #' @export
 
 cec_class_grid = function(filepaths, dim, cec = 17, rep = 51) {
@@ -41,9 +45,13 @@ cec_class_grid = function(filepaths, dim, cec = 17, rep = 51) {
 
 #' ECDF per problem
 #'
+#' @param filepaths filepaths to dirs with benchmark results :: [String]
+#' @param cec version of CEC :: Int
+#' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @export
 
-cec_problem_grid = function(filepaths, problems, dim, cec = 17, rep = 51) {
+cec_problem_grid = function(filepaths, cec, config)  {
+  c(dim, problems, rep) %<~% config
   ecdf_values = 
     problems %>% purrr::map_dfr(function(problem) {
       cecb::get_dfr(filepaths, list(dim = dim, fnc = problem, rep = rep)) %>%
@@ -53,29 +61,3 @@ cec_problem_grid = function(filepaths, problems, dim, cec = 17, rep = 51) {
     cecb::ecdf_plot() + ggplot2::facet_wrap( ~ Problem) + ggplot2::ggtitle(stringr::str_glue("CEC: {cec}"))
 }
 
-
-get_class_div = function(cec) {
-  if (cec %in% c(14, 17)) {
-   list(
-      unimodal = 1:3,
-      multimodal = 4:10,
-      hybrid = 11:20,
-      composition = 21:30
-    )
-  }
-  else if (cec == 13) {
-    list(
-      unimodal = 1:5,
-      multimodal = 6:10,
-      hybrid = 11:20,
-      composition = 21:30
-    )
-  } else {
-    list(
-      unimodal = 1,
-      multimodal = 2:4,
-      hybrid = 5:7,
-      composition = 8:10
-    )
-  }
-}

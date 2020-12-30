@@ -9,18 +9,23 @@
 #' @param dims dimensionalities :: [Int]
 #' @param rep amount of repetition :: Int
 #' @param cec year of benchmark :: Int
+#' @param suite benchmark suite :: String
 #' @param cpupc CPU usage in pct :: Int
+#' @param benchmark_id benchmark name :: String
+#' @param dest filepath to place where benchmark restuls will be saved :: String
 #' @importFrom foreach "%dopar%"
+#' @export
 
 benchmark_parallel = function(method, probnum, dims,
                               rep, cec = 17, suite = "basic", cpupc = .75,
-                              write_flag = TRUE, method_id,
+                              write_flag = TRUE, benchmark_id,
                               dest) {
   cli::cli_alert("(problem, dimension, repetition)\n")
   scores = get_scores(cec, suite)
   eval_func = get_eval_func(cec, suite)
   no_cores = floor(cpupc * parallel::detectCores())
   doParallel::registerDoParallel(no_cores)
+  eval_func = get_eval_func(cec, suite)
   for (d in dims) {
     results <- foreach::foreach(
       n = probnum,
@@ -35,7 +40,7 @@ benchmark_parallel = function(method, probnum, dims,
         time_start = Sys.time()
         result <- tryCatch(
           {
-            cli::cli_alert_info("Start {method_id}: ({n}, {d}, {i})\n")
+            cli::cli_alert_info("Start {benchmark_id}: ({n}, {d}, {i})\n")
             method(
               runif(d, -100, 100),
               fn = function(x) {
@@ -61,49 +66,15 @@ benchmark_parallel = function(method, probnum, dims,
           error_table_new[bb, i] <- abs(result$diagnostic$bestVal[ceiling(recordedTimes_new[bb] * nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
         time_end = round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        cli::cli_alert_success("Done {method_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
+        cli::cli_alert_success("Done {benchmark_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
       } 
       if (write_flag) {
-        save_results(resultVector, cec, method_id, n, d, "N", dest)
-        save_results(error_table_old, cec, method_id, n, d, "M", dest)
-        save_results(error_table_new, cec, method_id, n, d, "m", dest)
+        save_results(resultVector, cec, benchmark_id, n, d, "N", dest)
+        save_results(error_table_old, cec, benchmark_id, n, d, "M", dest)
+        save_results(error_table_new, cec, benchmark_id, n, d, "m", dest)
       }
     }
   }
   doParallel::stopImplicitCluster()
 }
 
-get_eval_func = function(cec, suite) {
-  if (cec == 13) {
-    function(n, x) { cecs::cec2013(n, x) + 1500 }
-  }
-  else if (cec == 14) {
-    function(n, x) { cecs::cec2014(n, x) }
-  }
-  else if (cec == 17) {
-    function(n, x) { cecs::cec2017(n, x) }
-  }
-  else if (cec == 21) {
-    function(n, x) { cecs::cec2021(n, x, suite) }
-  }
-}
-
-get_recordedTimes = function(dim) {
-    dim^(((0:15) / 5) - 3)
-}
-
-get_scores = function(cec, suite) {
-  if (cec == 13) {
-     c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
-  }
-  else if (cec %in% c(14, 17)) {
-    seq(100, 3000, by = 100)
-  }
-  else if (cec == 21) {
-    if (suite %in% c("basic", "shift", "rot", "shift_rot")) {
-      rep(0, 10)
-    } else {
-      c(100, 1100, 700, 1900, 1700, 1600, 2100, 2200, 2400, 2500)
-    }
-  }
-}

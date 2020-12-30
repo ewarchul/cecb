@@ -13,7 +13,7 @@ benchmark_parallel(
   suite = "basic",
   cpupc = 0.75,
   write_flag = TRUE,
-  method_id,
+  benchmark_id,
   dest
 )
 }
@@ -28,7 +28,13 @@ benchmark_parallel(
 
 \item{cec}{year of benchmark :: Int}
 
+\item{suite}{benchmark suite :: String}
+
 \item{cpupc}{CPU usage in pct :: Int}
+
+\item{benchmark_id}{benchmark name :: String}
+
+\item{dest}{filepath to place where benchmark restuls will be saved :: String}
 }
 \description{
 Function runs benchmark `.cec` on `.method` for given test functions and dimensionality. 

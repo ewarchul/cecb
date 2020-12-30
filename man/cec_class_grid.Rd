@@ -6,6 +6,15 @@
 \usage{
 cec_class_grid(filepaths, dim, cec = 17, rep = 51)
 }
+\arguments{
+\item{filepaths}{filepaths to dirs with benchmark results :: [String]}
+
+\item{dim}{dimensionality :: String}
+
+\item{cec}{version of CEC :: Int}
+
+\item{rep}{number of repetitions :: Int}
+}
 \description{
 ECDF in function classes
 }

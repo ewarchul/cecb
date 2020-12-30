@@ -4,10 +4,10 @@
 \alias{ecdf_plot}
 \title{ECDF plot}
 \usage{
-ecdf_plot(.dfx)
+ecdf_plot(dfx)
 }
 \arguments{
-\item{.dfx}{data frame with benchmark results}
+\item{dfx}{data frame with benchmark results}
 }
 \description{
 Function plots ECDF curves.

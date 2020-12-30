@@ -2,10 +2,12 @@
 % Please edit documentation in R/ecdf.R
 \name{ecdf_leval}
 \alias{ecdf_leval}
-\title{Compute partial ECDF values}
+\title{Compute partial ECDF values
+TODO}
 \usage{
 ecdf_leval(.result, .maxb, .eps)
 }
 \description{
 Compute partial ECDF values
+TODO
 }

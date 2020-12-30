@@ -1,3 +1,13 @@
+#' Compute ECDF values
+#'
+#' @description
+#' Function computes ECDF values and put results into data frame.
+#' @param benchmark_data previously loaded and parsed data from files :: [numeric]
+#' @param idpath filepath to benchmark results :: character
+#' @param probnums problems for which ECDF will be computed :: [integer]
+#' @param rep benchmark repetitions :: integer
+#' @return data frame with ECDF values
+
 compute_ecdf <- function(benchmark_data, idpath, probnums, rep) {
   bsteps <- c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)*log10(10000)
   ecdf_vals <- purrr::map(benchmark_data, get_ecdf)
@@ -15,6 +25,7 @@ compute_ecdf <- function(benchmark_data, idpath, probnums, rep) {
 
 
 #' Compute partial ECDF values
+#' TODO
 
 ecdf_leval = function(.result, .maxb, .eps) {
   lhs = 
