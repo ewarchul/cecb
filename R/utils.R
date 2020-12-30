@@ -1,11 +1,11 @@
 #' Extract method name
 #'
-#' @description 
+#' @description
 #' Function uses regex to extract method name from benchmark ID.
 #' @param id benchmark ID
 
-extract_method = function(id) {
-    id %>%
+extract_method <- function(id) {
+  id %>%
     stringr::str_extract_all("\\b[a-z]+\\b") %>%
     unlist() %>%
     stringr::str_c(collapse = "-")
@@ -29,10 +29,10 @@ extract_id <- function(idpaths) {
 #' @param algs list of closures
 #' @return list of algorithm names
 
-extract_names = function(amount, algs) {
+extract_names <- function(amount, algs) {
   1:amount %>%
     purrr::map_chr(function(num) {
-      alg =
+      alg <-
         algs %>% purrr::pluck(num)
       alg$algorithm
     })
@@ -45,55 +45,63 @@ extract_names = function(amount, algs) {
 #' @param algs list of closures
 #' @return list of partial functions
 
-extract_algorithm = function(amount, algs) {
+extract_algorithm <- function(amount, algs) {
   1:amount %>%
     purrr::map(function(num) {
-      alg =
+      alg <-
         algs %>% purrr::pluck(num)
-      base_func = 
+      base_func <-
         base::get(alg$algorithm)
-      param_set = 
+      param_set <-
         setNames(as.list(alg$values), alg$params)
       purrr::partial(base_func, control = param_set)
     })
 }
 
 #' Get function wrapper
-#' 
+#'
 #' @param cec version of CEC (13, 14, 17, 21) :: Int
-#' @param suite benchmark suite :: String 
+#' @param suite benchmark suite :: String
 
-get_eval_func = function(cec, suite) {
+get_eval_func <- function(cec, suite) {
   if (cec == 13) {
-    function(n, x) { cecs::cec2013(n, x) + 1500 }
+    function(n, x) {
+      cecs::cec2013(n, x) + 1500
+    }
   }
   else if (cec == 14) {
-    function(n, x) { cecs::cec2014(n, x) }
+    function(n, x) {
+      cecs::cec2014(n, x)
+    }
   }
   else if (cec == 17) {
-    function(n, x) { cecs::cec2017(n, x) }
+    function(n, x) {
+      cecs::cec2017(n, x)
+    }
   }
   else if (cec == 21) {
-    function(n, x) { cecs::cec2021(n, x, suite) }
+    function(n, x) {
+      cecs::cec2021(n, x, suite)
+    }
   }
 }
 
 #' Get budget steps for CEC2021
-#' 
+#'
 #' @param dim dimenstionality :: Int
 
-get_recordedTimes = function(dim) {
-    dim^(((0:15) / 5) - 3)
+get_recordedTimes <- function(dim) {
+  dim^(((0:15) / 5) - 3)
 }
 
 #' Get values of global optimum
-#' 
+#'
 #' @param cec version of CEC :: Int
 #' @param suite benchmark suite :: String
 
-get_scores = function(cec, suite) {
+get_scores <- function(cec, suite) {
   if (cec == 13) {
-     c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
+    c(seq(-1400, -100, by = 100), seq(100, 1400, 100)) + 1500
   }
   else if (cec %in% c(14, 17)) {
     seq(100, 3000, by = 100)
@@ -108,12 +116,12 @@ get_scores = function(cec, suite) {
 }
 
 #' Get problem partition in CECs
-#' 
+#'
 #' @param cec version of CEC :: Int
 
-get_class_div = function(cec) {
+get_class_div <- function(cec) {
   if (cec %in% c(14, 17)) {
-   list(
+    list(
       unimodal = 1:3,
       multimodal = 4:10,
       hybrid = 11:20,
@@ -136,4 +144,3 @@ get_class_div = function(cec) {
     )
   }
 }
-
