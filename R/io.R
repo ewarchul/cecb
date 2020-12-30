@@ -1,5 +1,5 @@
 #' Save benchmark results
-#' 
+#'
 #' @description
 #' Function saves result of benchmark to text file.
 #' @param x result vector or matrix
@@ -10,11 +10,12 @@
 #' @param label label of algorithm :: String
 #' @param type result type :: String
 
-save_results = function(x, cec, id, prob, dim, type, dest) {
-  dirpath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
-  filepath = stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}.txt")
-  if (!dir.exists(dirpath))
+save_results <- function(x, cec, id, prob, dim, type, dest) {
+  dirpath <- stringr::str_glue("{dest}/cec{cec}/{id}/{type}/")
+  filepath <- stringr::str_glue("{dest}/cec{cec}/{id}/{type}/{type}-{prob}-D-{dim}.txt")
+  if (!dir.exists(dirpath)) {
     dir.create(dirpath, recursive = TRUE)
+  }
   write.table(x, file = filepath, sep = ",", col.names = FALSE, row.names = FALSE)
 }
 
@@ -36,4 +37,3 @@ load_result_txt <- function(probnum, idpaths, dim) {
     }) %>%
     purrr::set_names(extract_id(idpaths))
 }
-

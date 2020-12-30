@@ -12,7 +12,7 @@ get_dfr <- function(idpaths, config) {
     base::stop("Missing config.")
   }
   c(dim, probnums, rep) %<~% config
-  txt_table = generate_table(idpaths, load_result_txt, probnums, dim)
+  txt_table <- generate_table(idpaths, load_result_txt, probnums, dim)
   base::Map(c, txt_table) %>%
     compute_ecdf(idpaths, probnums, rep)
 }
@@ -33,7 +33,7 @@ generate_table <- function(idpaths, format_handler, probnums, dim) {
 
 
 #' Area under curve
-#' 
+#'
 #' @description Function computes area under ECDF curve (AOC)
 #' @param dfx data frame with ECDF values
 #' @param method column name with algorithm(s) label(s) :: character
@@ -41,7 +41,7 @@ generate_table <- function(idpaths, format_handler, probnums, dim) {
 #' @param yarg column name of y-axis :: character
 #' @return data table with `Aoc` column :: tibble
 
-compute_aoc = function(dfx, method = "Method", xarg = "Bstep", yarg = "Value") {
+compute_aoc <- function(dfx, method = "Method", xarg = "Bstep", yarg = "Value") {
   dfx %>%
     dplyr::group_by(!!rlang::sym(method)) %>%
     dplyr::mutate(Aoc = pracma::trapz(!!rlang::sym(xarg), !!rlang::sym(yarg))) %>%

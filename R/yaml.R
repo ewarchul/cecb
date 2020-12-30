@@ -1,15 +1,15 @@
 #' YAML config parser
 #'
-#' @description 
-#' Function parses YAML configuration file. 
+#' @description
+#' Function parses YAML configuration file.
 #' @param filename name of config file :: String
 
-parse_yaml_config = function(filename) {
-  config = 
+parse_yaml_config <- function(filename) {
+  config <-
     yaml::read_yaml(filename)
-  alg_num = 
+  alg_num <-
     length(config$methods)
-  alg_names = 
+  alg_names <-
     extract_names(alg_num, config$methods)
 
   alg_names %>%
@@ -17,7 +17,7 @@ parse_yaml_config = function(filename) {
       source(paste0(config$source, "/", stringr::str_replace_all(method, "_", "-"), ".R"))
     })
 
-  config$methods_sym = 
+  config$methods_sym <-
     extract_algorithm(alg_num, config$methods)
   config
 }
@@ -28,14 +28,15 @@ parse_yaml_config = function(filename) {
 #' @param config named list :: [character]
 #' @return binary flag :: logical
 
-verify_config_names = function(config) {
-  required_fields = 
-    c("methods", "ids", "probnum",
+verify_config_names <- function(config) {
+  required_fields <-
+    c(
+      "methods", "ids", "probnum",
       "dims", "cec", "repnum",
       "cpupc", "source", "dest",
       "suite"
     )
-  diffs =
+  diffs <-
     purrr::prepend(
       dplyr::setdiff(names(config), required_fields),
       dplyr::setdiff(required_fields, names(config))
@@ -47,14 +48,14 @@ verify_config_names = function(config) {
 
 #' Config parser
 #'
-#' @description 
+#' @description
 #' Function parses benchmark configuration file.
 #' @param config config list
 
-parse_config = function(config) {
-  if (is.list(config))
+parse_config <- function(config) {
+  if (is.list(config)) {
     config
-  else
+  } else {
     parse_yaml_config(config)
+  }
 }
-
