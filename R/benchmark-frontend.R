@@ -21,7 +21,7 @@ run_benchmark = function(config) {
                      rep = parsed_config$repnum,
                      suite = parsed_config$suite,
                      cpupc = parsed_config$cpu,
-                     method_id = id,
+                     benchmark_id = id,
                      dest = parsed_config$dest,
       )
     })
