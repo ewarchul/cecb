@@ -133,7 +133,7 @@ get_class_div <- function(cec) {
       unimodal = 1:5,
       multimodal = 6:10,
       hybrid = 11:20,
-      composition = 21:30
+      composition = 21:28
     )
   } else {
     list(

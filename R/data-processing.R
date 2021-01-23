@@ -40,6 +40,7 @@ generate_table <- function(idpaths, format_handler, probnums, dim) {
 #' @param xarg column name of x-axis :: character
 #' @param yarg column name of y-axis :: character
 #' @return data table with `Aoc` column :: tibble
+#' @export
 
 compute_aoc <- function(dfx, method = "Method", xarg = "Bstep", yarg = "Value") {
   dfx %>%
