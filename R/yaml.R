@@ -7,6 +7,8 @@
 parse_yaml_config <- function(filename) {
   config <-
     yaml::read_yaml(filename)
+  config$source = stringr::str_interp(config$source)
+  config$dest = stringr::str_interp(config$dest)
   alg_num <-
     length(config$methods)
   alg_names <-
