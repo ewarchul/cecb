@@ -76,7 +76,7 @@ get_eval_func <- function(cec, suite) {
   }
   else if (cec == 17) {
     function(n, x) {
-      cecs::cec2017(n, x)
+      cec2017::cec2017(n, x)
     }
   }
   else if (cec == 21) {
