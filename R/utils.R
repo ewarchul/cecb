@@ -66,7 +66,7 @@ extract_algorithm <- function(amount, algs) {
 get_eval_func <- function(cec, suite) {
   if (cec == 13) {
     function(n, x) {
-      cecs::cec2013(n, x) + 1500
+      cec2013::cec2013(n, x) + 1500
     }
   }
   else if (cec == 14) {
@@ -84,6 +84,11 @@ get_eval_func <- function(cec, suite) {
       cecs::cec2021(n, x, suite)
     }
   }
+  else if (cec == 22) {
+    function(n, x) {
+      cecs::cec2022(n, x)
+    }
+   }
 }
 
 #' Get budget steps for CEC2021
@@ -112,6 +117,8 @@ get_scores <- function(cec, suite) {
     } else {
       c(100, 1100, 700, 1900, 1700, 1600, 2100, 2200, 2400, 2500)
     }
+  } else if (cec == 22) {
+      c(300, 400, 600, 800, 900, 1800, 2000, 2200, 2300, 2400, 2600, 2700)
   }
 }
 
