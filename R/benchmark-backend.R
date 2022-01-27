@@ -65,7 +65,6 @@ benchmark_parallel <- function(method, probnum, dims,
         for (bb in 1:length(recordedTimes_new)) {
           error_table_new[bb, i] <- abs(result$diagnostic$bestVal[ceiling(recordedTimes_new[bb] * nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
-        func_evals = result$n.evals
         time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
         cli::cli_alert_success("Done {benchmark_id}: ({n}, {d}, {i} [in {time_end} mins])\n")
       }
@@ -73,7 +72,6 @@ benchmark_parallel <- function(method, probnum, dims,
         save_results(resultVector, cec, benchmark_id, n, d, "N", dest)
         save_results(error_table_old, cec, benchmark_id, n, d, "M", dest)
         save_results(error_table_new, cec, benchmark_id, n, d, "m", dest)
-        save_results(func_evals, cec, benchmark_id, n, d, "T", dest)
       }
     }
   }
