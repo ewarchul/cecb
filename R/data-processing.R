@@ -6,15 +6,15 @@
 #' @return data frame with benchmark data :: tibble
 #' @export
 
-get_dfr <- function(idpaths, config) {
+get_dfr <- function(type, idpaths, config) {
   if (missing(config)) {
     cli::cli_alert_danger("User has to provide map with benchmark configuration. For more details check documentation.")
     base::stop("Missing config.")
   }
   c(dim, probnums, rep) %<~% config
-  txt_table <- generate_table(idpaths, load_result_txt, probnums, dim)
+  txt_table <- generate_table(idpaths, load_result_txt, type, probnums, dim)
   base::Map(c, txt_table) %>%
-    compute_ecdf(idpaths, probnums, rep)
+    compute_ecdf(type, idpaths, dim, probnums, rep)
 }
 
 #' Compute data frame with ECDF
@@ -27,8 +27,8 @@ get_dfr <- function(idpaths, config) {
 #' @param probnums problem indices :: [numeric]
 #' @param dim dimensionality of function :: numeric
 
-generate_table <- function(idpaths, format_handler, probnums, dim) {
-  purrr::map(probnums, format_handler, idpaths, dim)
+generate_table <- function(idpaths, format_handler, type, probnums, dim) {
+  purrr::map(probnums, format_handler, type, idpaths, dim)
 }
 
 

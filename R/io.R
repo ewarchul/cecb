@@ -28,11 +28,11 @@ save_results <- function(x, cec, id, prob, dim, type, dest) {
 #' @param idpaths benchmark ids :: [character]
 #' @param dim dimensionality of problem :: integer
 
-load_result_txt <- function(probnum, idpaths, dim) {
+load_result_txt <- function(probnum, type, idpaths, dim) {
   idpaths %>%
     purrr::map(function(id) {
       filepath <-
-        stringr::str_glue("{id}/M/M-{probnum}-D-{dim}.txt")
+        stringr::str_glue("{id}/{type}/{type}-{probnum}-D-{dim}.txt")
       read.table(file = filepath, sep = ",")
     }) %>%
     purrr::set_names(extract_id(idpaths))

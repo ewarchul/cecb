@@ -7,7 +7,7 @@
 #' @param ... extra params for `kbl()` 
 #' @export
 
-get_resultTable = function(idpath, problems, dim, type = "M", ...) {
+get_resultTable = function(idpath, problems, dim, type = "m", ...) {
     table = problems %>%
      purrr::map(function(p){
          datapath = stringr::str_glue("{idpath}/{type}/{type}-{p}-D-{dim}.txt")

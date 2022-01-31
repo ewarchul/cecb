@@ -32,11 +32,11 @@ ecdf_plot <- function(dfx) {
 #' @param rep number of repetitions :: Int
 #' @export
 
-cec_class_grid <- function(filepaths, dim, cec = 17, rep = 51) {
+cec_class_grid <- function(type, filepaths, dim, cec = 17, rep = 51) {
   class <- get_class_div(cec)
   ecdf_values <-
     class %>% purrr::map_dfr(function(cls) {
-      cecb::get_dfr(filepaths, list(dim = dim, fnc = cls, rep = rep)) %>%
+      cecb::get_dfr(type, filepaths, list(dim = dim, fnc = cls, rep = rep)) %>%
         dplyr::mutate(Class = factor(stringr::str_glue("Functions: {dplyr::first(cls)} - {dplyr::last(cls)}")))
     })
   ecdf_values %>%
@@ -50,11 +50,11 @@ cec_class_grid <- function(filepaths, dim, cec = 17, rep = 51) {
 #' @param config map with benchmark config: :: [dim :: integer, probnums :: [integer], reps :: integer]
 #' @export
 
-cec_problem_grid <- function(filepaths, cec, config) {
+cec_problem_grid <- function(type, filepaths, cec, config) {
   c(dim, problems, rep) %<~% config
   ecdf_values <-
     problems %>% purrr::map_dfr(function(problem) {
-      cecb::get_dfr(filepaths, list(dim = dim, fnc = problem, rep = rep)) %>%
+      cecb::get_dfr(type, filepaths, list(dim = dim, fnc = problem, rep = rep)) %>%
         dplyr::mutate(Problem = factor(stringr::str_glue("Function: {problem}")))
     })
   ecdf_values %>%

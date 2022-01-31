@@ -8,9 +8,9 @@
 #' @param rep benchmark repetitions :: integer
 #' @return data frame with ECDF values
 
-compute_ecdf <- function(benchmark_data, idpath, probnums, rep) {
-  bsteps <- c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0) * log10(10000)
-  ecdf_vals <- purrr::map(benchmark_data, get_ecdf)
+compute_ecdf <- function(benchmark_data, type, idpath, dim, probnums, rep) {
+  bsteps <-  get_bsteps(type, dim)
+  ecdf_vals <- purrr::map(benchmark_data, get_ecdf, length(bsteps))
   ecdf_ms <- get_ms(ecdf_vals, rep)
   get_mincnt(
     extract_id(idpath),
