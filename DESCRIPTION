@@ -16,7 +16,7 @@ Imports:
   parallel,
   furrr (>= 0.1.0),
   future (>= 1.16.0),
-  cli (>= 2.0.2),
+  logger (>= 0.2.2),
   cecs (>= 0.1.0),
   yaml (>= 2.2.1),
   stringr (>= 1.4.0),

@@ -20,7 +20,6 @@ benchmark_parallel <- function(method, probnum, dims,
                                rep, cec = 17, suite = "basic", cpupc = .75,
                                write_flag = TRUE, benchmark_id,
                                dest) {
-  cli::cli_alert("(problem, dimension, repetition)\n")
   scores <- get_scores(cec, suite)
   eval_func <- get_eval_func(cec, suite)
   no_cores <- floor(cpupc * parallel::detectCores())
@@ -39,10 +38,10 @@ benchmark_parallel <- function(method, probnum, dims,
       error_table_new <- matrix(0, nrow = 16, ncol = rep)
       fe_term_table_new <- matrix(0, nrow = 16, ncol = rep)
       for (i in 1:rep) {
-        time_start <- Sys.time()
+        rep_start <- Sys.time()
         result <- tryCatch(
           {
-            cli::cli_alert_info("Start {benchmark_id}: ({n}, {d}, {i})\r")
+            logger::log_info("Starting benchmark [id={benchmark_id}].Details: fn={n}, dim={d}, rep={i}.")
             method(
               par = runif(d, -100, 100),
               fn = function(x) {
@@ -57,7 +56,7 @@ benchmark_parallel <- function(method, probnum, dims,
               print(paste("Dim:", d, " Problem:", n, " ", cond))
             }
         )
-        fe_term_table_new[,i] <- result$n.evals
+        fe_term_table_new[, i] <- result$n.evals
         resultVector <- c(resultVector, abs(result$value - scores[n]))
         resets <- c(resets, result$resets)
         recordedTimes_old <- c(0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
@@ -68,8 +67,8 @@ benchmark_parallel <- function(method, probnum, dims,
         for (bb in 1:length(recordedTimes_new)) {
           error_table_new[bb, i] <- abs(result$diagnostic$bestVal[ceiling(recordedTimes_new[bb] * nrow(result$diagnostic$bestVal)), ] - scores[n])
         }
-        time_end <- round(as.numeric(Sys.time() - time_start, unit = "mins"), 2)
-        cli::cli_alert_success("Done {benchmark_id}: ({n}, {d}, {i} [in {time_end} mins])\r")
+        rep_end <- round(as.numeric(Sys.time() - rep_start, unit = "secs"), 2)
+        logger::log_info("Repetition {i} of benchmark [id={benchmark_id}, fn={n}, dim={d}] finished in {rep_end}s.")
       }
       if (write_flag) {
         save_results(resultVector, cec, benchmark_id, n, d, "N", dest)
